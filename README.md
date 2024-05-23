@@ -1,6 +1,6 @@
 # Zidio Internship Project
 
-![Zidio Logo](https://zidio.in/img/logo2.png)
+<img src="https://zidio.in/img/logo2.png" alt="Zidio Logo" width="200" height="100">
 
 Welcome to the Zidio Internship Project repository. This project utilizes the MERN stack (MongoDB, Express.js, React.js, Node.js).
 
