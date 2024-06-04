@@ -5,7 +5,7 @@ import { HomeScreen, Authentication } from "../pages";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
@@ -18,7 +18,7 @@ const App = () => {
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Suspense>
-      <ToastContainer />
+      <ToastContainer position="top-right" theme="dark" />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
