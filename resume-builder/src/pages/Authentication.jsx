@@ -2,7 +2,7 @@ import React from 'react'
 
 const Authentication = () => {
   return (
-	<div>Authentication</div>
+	<div className='auth-section'>Authentication</div>
   )
 }
 
