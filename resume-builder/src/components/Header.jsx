@@ -7,7 +7,8 @@ import { PuffLoader } from "react-spinners";
 import { HiLogout } from "react-icons/hi";
 import { slideUpDownMenu } from "../animations";
 import { auth } from "../config/firebase.config";
-import { useQueries, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
+import { FadeInOutWithOpacity } from "../animations";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
@@ -47,6 +48,7 @@ const Header = () => {
           <React.Fragment>
             {data ? (
               <motion.div
+                {...FadeInOutWithOpacity}
                 className="relative"
                 onClick={() => setisMenu(!isMenu)}
               >
@@ -140,7 +142,14 @@ const Header = () => {
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button>Login</motion.button>
+                <motion.button
+                  className="px-4 py-2 rounded-md border border-gray-300
+                bg-gray-200 hover:shadow-md active:scale-95 duration-150"
+                  type="button"
+                  {...FadeInOutWithOpacity}
+                >
+                  Login
+                </motion.button>
               </Link>
             )}
           </React.Fragment>
