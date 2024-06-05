@@ -91,7 +91,7 @@ const Header = () => {
                             referrerPolicy="no-referrer"
                             alt=""
                             className="w-full
-					h-full object-cover rounded-md"
+					h-full object-cover rounded-full"
                           />
                         </div>
                       ) : (
