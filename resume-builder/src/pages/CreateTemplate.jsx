@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
-import { FaUpload } from "react-icons/fa";
+import { FaDownload, FaUpload } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { upload } from "@testing-library/user-event/dist/upload";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +22,36 @@ const CreateTemplate = () => {
   };
   // handle the image file changes
   const handleFileSelect = async (e) => {
+    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
     const file = e.target.files[0];
-    console.log(file);
+
+    if (file && isAllowed(file)) {
+      const storageRef = ref( `Templates/${Date.now()}-${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
+          }));
+        },
+        (error) => {
+          if (error.message.includes("storage/unauthorized")) {
+            toast.error(`Error: Authorization Revoked`)
+          } else {
+            toast.error(`Error: ${error.message}`)
+          }
+        }
+
+      );
+    } else {
+      toast.info("Invalid File Format");
+    }
+  };
+  const isAllowed = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
   };
   return (
     <div
