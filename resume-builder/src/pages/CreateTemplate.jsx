@@ -11,7 +11,9 @@ const CreateTemplate = () => {
         className="col-span-12 lg:col-span-4 2xl:col-span-3 w-full flex-1
       flex items-center justify-start flex-col gap-4 px-2"
       >
-        1
+        <div className="w-full">
+          <p className="text-lg text-txtPrimary">Create a new template</p>
+        </div>
       </div>
       {/* Right container */}
       <div className="col-span-12 lg:col-span-8 2xl:col-span-9 bg-red-200">
