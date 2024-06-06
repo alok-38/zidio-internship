@@ -1,6 +1,8 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Authentication, HomeScreen } from "../pages";
+
+const HomeScreen = lazy(() => import("../pages/HomeScreen"));
+const Authentication = lazy(() => import("../pages/Authentication"));
 
 const App = () => {
   return (
