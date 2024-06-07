@@ -5,10 +5,21 @@ import { Logo } from "../assets";
 import { AnimatePresence, motion } from "framer-motion";
 import { PuffLoader } from "react-spinners";
 import { HiLogout } from "react-icons/hi";
+import { FadeInOutWithOpacityAlone, slideUpDownDropMenu } from "../animations";
+import { useQueryClient } from "react-query";
+import { auth } from "../config/firebase.config";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
   const [isMenu, setIsMenu] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const signOutUser = async () => {
+    await auth.signOut().then(() => {
+      queryClient.setQueryData("user", null);
+    });
+  };
   return (
     <header
       className="w-full flex items-center justify-between px-4 py-3 lg:px-8 border-b
@@ -63,10 +74,11 @@ const Header = () => {
                 <AnimatePresence>
                   {isMenu && (
                     <motion.div
+                      {...slideUpDownDropMenu}
                       className="absolute px-4 py-3 rounded-md
 				bg-white right-0 flex flex-col justify-start gap-3 w-64 items-center
 				pt-12 top-14"
-                      onMouseLeave={() => setIsMenu(!isMenu)}
+                      onMouseLeave={() => setIsMenu(false)}
                     >
                       {data?.photoURL ? (
                         <div className="w-20 h-20 rounded-full relative flex flex-col items-center justify-center cursor-pointer">
@@ -110,6 +122,7 @@ const Header = () => {
                         <div
                           className="w-full px-2 py-2 border-t border-gray-300
 					  flex items-center justify-between group"
+                          onClick={signOutUser}
                         >
                           <p className="group-hover:text-txtDark text-txtLight cursor-pointer">
                             Sign Out
@@ -123,7 +136,9 @@ const Header = () => {
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button>Login</motion.button>
+                <motion.button type="button" {...FadeInOutWithOpacityAlone} className="px-4 py-2 rounded-md
+                border-gray-300 bg-gray-200 hover:shadow-md active:scale-95
+                duration-150">Login</motion.button>
               </Link>
             )}
           </React.Fragment>
