@@ -8,6 +8,7 @@ import { HiLogout } from "react-icons/hi";
 import { FadeInOutWithOpacityAlone, slideUpDownDropMenu } from "../animations";
 import { useQueryClient } from "react-query";
 import { auth } from "../config/firebase.config";
+import { adminIds } from "../utils/helpers";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
@@ -113,12 +114,14 @@ const Header = () => {
                         >
                           My Account
                         </Link>
-                        <Link
-                          className="text-txtLight hover:text-txtDark text-base whitespace-nowrap"
-                          to={"/template/create"}
-                        >
-                          Add new template
-                        </Link>
+                        {adminIds.includes(data?.uid) && (
+                          <Link
+                            className="text-txtLight hover:text-txtDark text-base whitespace-nowrap"
+                            to={"/template/create"}
+                          >
+                            Add new template
+                          </Link>
+                        )}
                         <div
                           className="w-full px-2 py-2 border-t border-gray-300
 					  flex items-center justify-between group"
@@ -136,9 +139,15 @@ const Header = () => {
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button type="button" {...FadeInOutWithOpacityAlone} className="px-4 py-2 rounded-md
+                <motion.button
+                  type="button"
+                  {...FadeInOutWithOpacityAlone}
+                  className="px-4 py-2 rounded-md
                 border-gray-300 bg-gray-200 hover:shadow-md active:scale-95
-                duration-150">Login</motion.button>
+                duration-150"
+                >
+                  Login
+                </motion.button>
               </Link>
             )}
           </React.Fragment>
