@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { auth, db } from "../config/firebase.config";
 import {
   collection,

@@ -1,11 +1,22 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Logo } from "../assets";
 import { AuthButtonWithProvider } from "../components";
 import { Footer } from "../containers";
 import { FaGoogle, FaGithub } from "react-icons/fa6";
-import { toast } from "react-toastify";
+import useUser from "../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 const Authentication = () => {
+  const { data, isLoading, isError } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && data) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, data, navigate]);
+
+
   return (
     <div className="w-full h-screen overflow-hidden flex flex-col items-start justify-start gap-6 px-6 py-4">
       {/* top section */}
@@ -33,7 +44,6 @@ const Authentication = () => {
           />
         </div>
       </div>
-      <button onClick={() => toast.success("Woa! its too easy to integrate!")}>Toast</button>
       {/* Footer */}
       <Footer />
     </div>
