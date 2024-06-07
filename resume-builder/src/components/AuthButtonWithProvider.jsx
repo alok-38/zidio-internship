@@ -1,17 +1,37 @@
 import React from "react";
 import { FaChevronRight } from "react-icons/fa6";
-import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithRedirect,
+} from "firebase/auth";
+import { auth } from "../config/firebase.config";
 
 const AuthButtonWithProvider = ({ Icon, label, provider }) => {
   const googleAuthProvider = new GoogleAuthProvider();
   const githubAuthProvider = new GithubAuthProvider();
   const handleClick = async () => {
-    if (provider === "GoogleAuthProvider") {
-      console.log("Inside Google auth");
-    } else if (provider === "GitHubAuthProvider") {
-      console.log("Inside Github auth");
-    } else {
-      console.log("Inside Google auth");
+    switch (provider) {
+      case "GitHubAuthProvider":
+        await signInWithRedirect(auth, githubAuthProvider)
+          .then((result) => {
+            console.log(result);
+          })
+          .catch(() => {
+            console.log("Error");
+          });
+        break;
+
+      default:
+        await signInWithRedirect(auth, googleAuthProvider)
+          .then((result) => {
+            console.log(result);
+          })
+          .catch(() => {
+            console.log("Error");
+          });
+
+        break;
     }
   };
   return (
