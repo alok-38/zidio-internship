@@ -86,6 +86,7 @@ const Header = () => {
                       className="w-full h-full object-cover rounded-md"
                       referrerPolicy="no-referrer"
                       src={data?.photoURL}
+                      alt=""
                     />
 
                     {/* drop menu */}
@@ -102,6 +103,7 @@ const Header = () => {
                                 className="w-20 h-20 object-cover rounded-full shadow-md"
                                 referrerPolicy="no-referrer"
                                 src={data?.photoURL}
+                                alt=""
                               />
                               <p className="text-lg  tracking-wider text-txtPrimary">
                                 {data?.displayName}
