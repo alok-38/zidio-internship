@@ -2,7 +2,6 @@ import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { Template1, Template2 } from "../designs";
 import { toast } from "react-toastify";
 import { db } from "../config/firebase.config";
-import * as htmlToImage from 'html-to-image';
 
 export const adminIds = ["101057016679337500646"];
 
