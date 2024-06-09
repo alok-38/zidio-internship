@@ -18,7 +18,10 @@ const App = () => {
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Suspense>
-      <ToastContainer position="top-right" theme="dark" />
+      <ToastContainer
+        position="top-right"
+        theme="dark"
+      />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
