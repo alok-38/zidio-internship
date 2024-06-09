@@ -39,7 +39,7 @@ export const TemplatesData = [
   { id: `template2-${Date.now()}`, name: "Template2", component: TemplateTwo },
 ];
 
-export const adminIds = ["116066160874334281494", "25000924"];
+export const adminIds = ["101057016679337500646"];
 
 export const initialTags = [
   "Software Engineer",
