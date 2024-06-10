@@ -1,6 +1,7 @@
+import React from "react";
+import { Document, Page, View } from "@react-pdf/renderer";
 import { DEFAULT_FONT_COLOR, Settings } from "@/app/lib/redux/settingsSlice";
 import { Resume } from "@/app/lib/redux/types";
-import { Document, Page, View } from "@react-pdf/renderer";
 import { styles, spacing } from "./styles";
 import { ResumePDFProfile } from "./ResumePDFProfile";
 import { ShowForm } from "@/app/lib/redux/settingsSlice";
@@ -34,8 +35,10 @@ export const ResumePDF = ({
     showBulletPoints,
   } = settings;
 
+  // Filter forms to show based on user settings
   const showFormsOrder = formsOrder.filter((form) => formToShow[form]);
 
+  // Map form types to their respective components
   const formTypeToComponent: { [type in ShowForm]: () => JSX.Element } = {
     workExperiences: () => (
       <ResumePDFWorkExperience
@@ -78,44 +81,45 @@ export const ResumePDF = ({
   };
 
   return (
-    <>
-      <Document title={`${name} Resume`} author={name} producer={"Inhouse"}>
-        <Page
-          size={documentSize === "A4" ? "A4" : "LETTER"}
-          style={{
-            ...styles.flexCol,
-            color: DEFAULT_FONT_COLOR,
-            fontFamily,
-            fontSize: fontSize + "pt",
-          }}
-        >
-          {Boolean(settings.themeColor) && (
-            <View
-              style={{
-                width: spacing["full"],
-                height: spacing[3.5],
-                backgroundColor: themeColor,
-              }}
-            />
-          )}
+    <Document title={`${name} Resume`} author={name} producer={"Inhouse"}>
+      <Page
+        size={documentSize === "A4" ? "A4" : "LETTER"}
+        style={{
+          ...styles.flexCol,
+          color: DEFAULT_FONT_COLOR,
+          fontFamily,
+          fontSize: fontSize + "pt",
+        }}
+      >
+        {/* Render the theme color header if themeColor is set */}
+        {Boolean(themeColor) && (
           <View
             style={{
-              ...styles.flexCol,
-              padding: `${spacing[0]} ${spacing[20]}`,
+              width: spacing["full"],
+              height: spacing[3.5],
+              backgroundColor: themeColor,
             }}
-          >
-            <ResumePDFProfile
-              profile={profile}
-              themeColor={themeColor}
-              isPDF={isPDF}
-            />
-            {showFormsOrder.map((form) => {
-              const Component = formTypeToComponent[form];
-              return <Component key={form} />;
-            })}
-          </View>
-        </Page>
-      </Document>
-    </>
+          />
+        )}
+        <View
+          style={{
+            ...styles.flexCol,
+            padding: `${spacing[0]} ${spacing[20]}`,
+          }}
+        >
+          {/* Render the profile section */}
+          <ResumePDFProfile
+            profile={profile}
+            themeColor={themeColor}
+            isPDF={isPDF}
+          />
+          {/* Render other sections based on the forms order */}
+          {showFormsOrder.map((form) => {
+            const Component = formTypeToComponent[form];
+            return <Component key={form} />;
+          })}
+        </View>
+      </Page>
+    </Document>
   );
 };
