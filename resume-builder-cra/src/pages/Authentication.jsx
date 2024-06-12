@@ -10,9 +10,9 @@ const Authentication = () => {
   const { data, isLoading, isError } = useUser();
   const navigate = useNavigate();
 
-  // Redirect to home if user is authenticated
   useEffect(() => {
     if (!isLoading && data) {
+      console.log("User authenticated, redirecting to home");
       navigate("/", { replace: true });
     }
   }, [isLoading, data, navigate]);
@@ -22,6 +22,7 @@ const Authentication = () => {
   }
 
   if (isError) {
+    console.error("Error loading user data.");
     return <p>Error loading user data. Please try again.</p>;
   }
 
@@ -47,14 +48,14 @@ const Authentication = () => {
         <div className="w-full lg:w-96 p-4 rounded-md flex flex-col items-center justify-start gap-6">
           <AuthButtonWithProvider
             Icon={FaGoogle}
-            label={"Signin with Google"}
+            label={"Sign in with Google"}
             provider={"GoogleAuthProvider"}
             aria-label="Sign in with Google"
           />
 
           <AuthButtonWithProvider
             Icon={FaGithub}
-            label={"Signin with GitHub"}
+            label={"Sign in with GitHub"}
             provider={"GitHubAuthProvider"}
             aria-label="Sign in with GitHub"
           />

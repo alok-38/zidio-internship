@@ -1,20 +1,14 @@
 import { auth, db } from "../config/firebase.config";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  setDoc,
-} from "firebase/firestore";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
 
 export const getUserDetail = () => {
   return new Promise((resolve, reject) => {
     const authUnsubscribe = auth.onAuthStateChanged((userCred) => {
       if (userCred) {
         const userData = userCred.providerData[0];
-
         const userDocRef = doc(db, "users", userData?.uid);
+
         const userDocUnsubscribe = onSnapshot(userDocRef, (_doc) => {
           if (_doc.exists()) {
             resolve(_doc.data());
@@ -29,14 +23,12 @@ export const getUserDetail = () => {
           }
         });
 
-        // Clean up auth listener
-        authUnsubscribe();
-
-        // Return unsubscribe function for Firestore snapshot listener
-        return () => userDocUnsubscribe();
+        return () => {
+          authUnsubscribe();
+          userDocUnsubscribe();
+        };
       } else {
         reject(new Error("User is not authenticated"));
-        authUnsubscribe();
       }
     });
   });
@@ -49,32 +41,22 @@ export const getTemplates = () => {
       orderBy("timeStamp", "asc")
     );
 
-    const unsubscribe = onSnapshot(
-      templateQuery,
-      (querySnap) => {
-        const templates = querySnap.docs.map((doc) => doc.data());
-        resolve(templates);
-      },
-      reject
-    );
+    const unsubscribe = onSnapshot(templateQuery, (querySnap) => {
+      const templates = querySnap.docs.map((doc) => doc.data());
+      resolve(templates);
+    });
 
-    // Return unsubscribe function for Firestore snapshot listener
-    return () => unsubscribe();
+    return unsubscribe;
   });
 };
 
 export const getTemplateDetail = (id) => {
   return new Promise((resolve, reject) => {
-    const unsubscribe = onSnapshot(
-      doc(db, "templates", id),
-      (doc) => {
-        resolve(doc.data());
-      },
-      reject
-    );
+    const unsubscribe = onSnapshot(doc(db, "templates", id), (doc) => {
+      resolve(doc.data());
+    });
 
-    // Return unsubscribe function for Firestore snapshot listener
-    return () => unsubscribe();
+    return unsubscribe;
   });
 };
 
@@ -84,12 +66,10 @@ export const getTemplateDetailEditByUser = (uid, id) => {
       doc(db, "users", uid, "resumes", id),
       (doc) => {
         resolve(doc.data());
-      },
-      reject
+      }
     );
 
-    // Return unsubscribe function for Firestore snapshot listener
-    return () => unsubscribe();
+    return unsubscribe;
   });
 };
 
@@ -100,16 +80,11 @@ export const getSavedResumes = (uid) => {
       orderBy("timeStamp", "asc")
     );
 
-    const unsubscribe = onSnapshot(
-      templateQuery,
-      (querySnap) => {
-        const templates = querySnap.docs.map((doc) => doc.data());
-        resolve(templates);
-      },
-      reject
-    );
+    const unsubscribe = onSnapshot(templateQuery, (querySnap) => {
+      const templates = querySnap.docs.map((doc) => doc.data());
+      resolve(templates);
+    });
 
-    // Return unsubscribe function for Firestore snapshot listener
-    return () => unsubscribe();
+    return unsubscribe;
   });
 };

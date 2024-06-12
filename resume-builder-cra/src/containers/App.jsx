@@ -1,23 +1,21 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import HomeContainer from "./HomeContainer"; // Corrected import
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-
-// Lazy load components
-const HomeScreen = lazy(() => import("../pages/HomeScreen"));
-const Authentication = lazy(() => import("../pages/Authentication"));
-
-// Initialize QueryClient
+import "react-toastify/dist/ReactToastify.css";
+import { MainSpinner } from "../components";
+import Authentication from "../pages/Authentication";
 
 const App = () => {
   const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<MainSpinner />}>
         <Routes>
-          <Route path="/*" element={<HomeScreen />} />
+          <Route path="/*" element={<HomeContainer />} />
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Suspense>

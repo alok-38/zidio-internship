@@ -1,23 +1,26 @@
 import { useQuery } from "react-query";
-import { getUserDetail } from "../api";
-import { toast } from "react-toastify";
+import { auth } from "../config/firebase.config";
 
 const useUser = () => {
   const { data, isLoading, isError, refetch } = useQuery(
     "user",
     async () => {
       try {
-        const userDetail = await getUserDetail();
-        return userDetail;
-      } catch (error) {
-        if (error.message.includes("not authenticated")) {
-          // Handle unauthenticated user error
-          toast.error("User is not authenticated. Please sign in.");
+        const user = auth.currentUser;
+        if (user) {
+          // User is authenticated, fetch user details
+          const userData = {
+            uid: user.uid,
+            email: user.email,
+            // Add any other user details you need
+          };
+          return userData;
         } else {
-          // Handle other errors
-          toast.error("Something went wrong while fetching user data.");
+          // User is not authenticated
+          throw new Error("User is not authenticated");
         }
-        // Re-throw error for React Query to handle
+      } catch (error) {
+        // Handle errors
         throw error;
       }
     },
