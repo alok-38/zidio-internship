@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Logo } from "../assets";
-import { FaChevronRight, FaGithub, FaGoogle } from "react-icons/fa6";
+import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { Footer } from "../containers";
 import { AuthButtonWithProvider, MainSpinner } from "../components";
 import useUser from "../hooks/useUser";
