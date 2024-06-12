@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 // Lazy load components
 const HomeScreen = lazy(() => import("../pages/HomeScreen"));
@@ -21,7 +21,7 @@ const App = () => {
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Suspense>
-      <ToastContainer />
+      <ToastContainer position="top-right" theme="dark" />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
