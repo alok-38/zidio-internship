@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import { db, storage } from "../config/firebase.config";
 import { FaTrash, FaUpload } from "react-icons/fa6";
 import {
-  getStorage,
   ref,
   getDownloadURL,
   uploadBytesResumable,
@@ -17,7 +16,7 @@ import {
 } from "firebase/storage";
 
 const CreateTemplate = () => {
-  const { data, isLoading, isError } = useUser();
+  const { data: user, isLoading, isError } = useUser();
   const {
     data: templates,
     isLoading: t_isLoading,
@@ -39,26 +38,34 @@ const CreateTemplate = () => {
 
   const [selectedTags, setSelectedTags] = useState([]);
 
+  useEffect(() => {
+    if (!isLoading && (!user || !adminIds.includes(user.uid))) {
+      toast.error("You are not authorized to access this page.");
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, user, navigate]);
+
   const handleTagClick = (tag) => {
-    // Check if the tag is already selected
     if (selectedTags.includes(tag)) {
-      // If selected, remove it
       setSelectedTags(
         selectedTags.filter((selectedTag) => selectedTag !== tag)
       );
     } else {
-      // If not selected, add it
       setSelectedTags([...selectedTags, tag]);
     }
   };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    // Update the corresponding property in the state object
     setFormData((previousData) => ({ ...previousData, [name]: value }));
   };
 
   const pushTemplateData = async () => {
+    if (!user) {
+      toast.error("User is not authenticated");
+      return;
+    }
+
     const timeStamp = serverTimestamp();
     const id = `${Date.now()}`;
     const _doc = {
@@ -72,68 +79,56 @@ const CreateTemplate = () => {
           : "Template1",
       timeStamp: timeStamp,
     };
-    console.log(_doc);
 
-    setDoc(doc(db, "templates", id), _doc)
-      .then(() => {
-        setFormData((prevData) => ({
-          ...prevData,
-          title: "",
-          imgUrl: null,
-        }));
-        setImageAsset((prevAsset) => ({ ...prevAsset, imageURL: null }));
-        setSelectedTags([]);
-        refetch();
-      })
-      .catch((err) => {
-        toast.error(`Error : ${err.message}`);
-      });
+    try {
+      await setDoc(doc(db, "templates", id), _doc);
+      setFormData({ title: "", imgUrl: null });
+      setImageAsset({ isImageLoading: false, imageURL: null, progress: 0 });
+      setSelectedTags([]);
+      refetch();
+      toast.success("Template created successfully");
+    } catch (err) {
+      toast.error(`Error: ${err.message}`);
+    }
   };
 
-  // file upload
   const handleFileSelect = async (event) => {
-    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
-    // console.log(event.target.files[0]);
+    setImageAsset({ ...imageAsset, isImageLoading: true });
     const file = event.target.files[0];
     if (file && isAllowed(file)) {
       const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
-
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          setImageAsset((prevAsset) => ({
-            ...prevAsset,
+          setImageAsset({
+            ...imageAsset,
             progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-          }));
+          });
         },
         (error) => {
+          setImageAsset({ ...imageAsset, isImageLoading: false });
           if (error.message.includes("storage/unauthorized")) {
-            toast.error("Error Authorization revoked");
+            toast.error("Error: Authorization revoked");
           } else {
-            toast.warning("Something went wrong please try again later");
+            toast.warning("Something went wrong, please try again later");
           }
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageAsset((prevAsset) => ({
-              ...prevAsset,
+            setImageAsset({
+              isImageLoading: false,
               imageURL: downloadURL,
-            }));
-
+              progress: 0,
+            });
             toast.success("File uploaded to server");
-            setInterval(() => {
-              setImageAsset((prevAsset) => ({
-                ...prevAsset,
-                isImageLoading: false,
-              }));
-            }, 2000);
           });
         }
       );
     } else {
-      toast.error("Invalid File Format");
+      setImageAsset({ ...imageAsset, isImageLoading: false });
+      toast.error("Invalid file format");
     }
   };
 
@@ -142,42 +137,29 @@ const CreateTemplate = () => {
     return allowedTypes.includes(file.type);
   };
 
-  // delete an image
   const deleteImageObject = () => {
     const deleteRef = ref(storage, imageAsset.imageURL);
-    deleteObject(deleteRef).then(() => {
-      toast.success("Image removed from the cloud");
-      setImageAsset((prevAsset) => ({
-        ...prevAsset,
-        progress: 0,
-        imageURL: null,
-      }));
-    });
-  };
-
-  // delete the template
-  const removeTemplate = async (template) => {
-    console.log(template);
-    const deleteRef = ref(storage, template.imageURL);
-    await deleteObject(deleteRef).then(() => {
-      toast.success("Image removed from the cloud");
-    });
-
-    await deleteDoc(doc(db, "templates", template._id))
+    deleteObject(deleteRef)
       .then(() => {
-        toast.success("Template removed");
-        refetch();
+        toast.success("Image removed from the cloud");
+        setImageAsset({ isImageLoading: false, imageURL: null, progress: 0 });
       })
       .catch((error) => {
-        toast.error("Something went wrong try again later");
+        toast.error(`Error: ${error.message}`);
       });
   };
 
-  useEffect(() => {
-    if (!isLoading && !adminIds.includes(data?.uid)) {
-      navigate("/", { replace: true });
+  const removeTemplate = async (template) => {
+    const deleteRef = ref(storage, template.imageURL);
+    try {
+      await deleteObject(deleteRef);
+      await deleteDoc(doc(db, "templates", template._id));
+      toast.success("Template removed");
+      refetch();
+    } catch (error) {
+      toast.error("Something went wrong, try again later");
     }
-  }, [isLoading, data, navigate]);
+  };
 
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
@@ -185,14 +167,13 @@ const CreateTemplate = () => {
         <div className="w-full">
           <p className="text-lg text-txtPrimary">Create a new Template</p>
         </div>
-        {/* title */}
 
         {t_isLoading ? (
           <PuffLoader color="#498FCD" size={40} />
         ) : (
           <div className="w-full flex items-center justify-end">
             <p className="text-base text-txtLight uppercase font-semibold">
-              TempId :{" "}
+              TempId:{" "}
             </p>
             <p className="text-sm text-txtDark font-bold tracking-wider">
               {templates && templates.length > 0
@@ -211,7 +192,6 @@ const CreateTemplate = () => {
           onChange={handleInputChange}
         />
 
-        {/* file upload */}
         <div className="w-full bg-gray-100 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-gray-300 cursor-pointer flex items-center justify-center">
           {imageAsset.isImageLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
@@ -221,24 +201,22 @@ const CreateTemplate = () => {
           ) : (
             <>
               {!imageAsset.imageURL ? (
-                <React.Fragment>
-                  <label className=" w-full cursor-pointer h-full">
-                    <div className="flex flex-col items-center justify-center h-full">
-                      <div className="flex flex-col justify-center items-center cursor-pointer">
-                        <p className="font-bold text-2xl">
-                          <FaUpload />
-                        </p>
-                        <p className="text-lg">Click to upload</p>
-                      </div>
+                <label className="w-full cursor-pointer h-full">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <div className="flex flex-col justify-center items-center cursor-pointer">
+                      <p className="font-bold text-2xl">
+                        <FaUpload />
+                      </p>
+                      <p className="text-lg">Click to upload</p>
                     </div>
-                    <input
-                      type="file"
-                      className="w-0 h-0"
-                      accept=".jpeg,.jpg,.png"
-                      onChange={handleFileSelect}
-                    />
-                  </label>
-                </React.Fragment>
+                  </div>
+                  <input
+                    type="file"
+                    className="w-0 h-0"
+                    accept=".jpeg,.jpg,.png"
+                    onChange={handleFileSelect}
+                  />
+                </label>
               ) : (
                 <div className="relative w-full h-full overflow-hidden rounded-md">
                   <img
@@ -247,7 +225,6 @@ const CreateTemplate = () => {
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
-
                   <div
                     className="absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center bg-red-500 cursor-pointer"
                     onClick={deleteImageObject}
@@ -260,13 +237,21 @@ const CreateTemplate = () => {
           )}
         </div>
 
-        {/* tags */}
+        <div className="w-full flex items-center justify-end">
+          <button
+            type="button"
+            className="flex items-center justify-center px-4 py-3 border rounded-md bg-primary text-txtPrimary shadow-md hover:shadow-lg focus:shadow-lg"
+            onClick={pushTemplateData}
+          >
+            <p>Create Template</p>
+          </button>
+        </div>
         <div className="w-full flex items-center flex-wrap gap-2">
           {initialTags.map((tag) => (
             <div
               key={tag}
               onClick={() => handleTagClick(tag)}
-              className={` border  border-gray-300 px-2 py-1 rounded-md cursor-pointer ${
+              className={`border border-gray-300 px-2 py-1 rounded-md cursor-pointer ${
                 selectedTags.includes(tag) ? "bg-blue-500 text-white" : ""
               }`}
             >
@@ -274,14 +259,8 @@ const CreateTemplate = () => {
             </div>
           ))}
         </div>
-
-        <button
-          className="w-full bg-blue-700 text-white rounded-md py-3"
-          onClick={pushTemplateData}
-        >
-          Save
-        </button>
       </div>
+
       <div className="px-2 w-full flex-1 py-4 col-span-12 lg:col-span-8 2xl:col-span-9">
         {t_isLoading ? (
           <div className="w-full h-full flex items-center justify-center">

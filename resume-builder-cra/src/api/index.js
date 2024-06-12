@@ -33,7 +33,7 @@ export const getUserDetail = () => {
         authUnsubscribe();
 
         // Return unsubscribe function for Firestore snapshot listener
-        return userDocUnsubscribe;
+        return () => userDocUnsubscribe();
       } else {
         reject(new Error("User is not authenticated"));
         authUnsubscribe();
@@ -59,7 +59,7 @@ export const getTemplates = () => {
     );
 
     // Return unsubscribe function for Firestore snapshot listener
-    return unsubscribe;
+    return () => unsubscribe();
   });
 };
 
@@ -74,7 +74,7 @@ export const getTemplateDetail = (id) => {
     );
 
     // Return unsubscribe function for Firestore snapshot listener
-    return unsubscribe;
+    return () => unsubscribe();
   });
 };
 
@@ -89,7 +89,7 @@ export const getTemplateDetailEditByUser = (uid, id) => {
     );
 
     // Return unsubscribe function for Firestore snapshot listener
-    return unsubscribe;
+    return () => unsubscribe();
   });
 };
 
@@ -110,6 +110,6 @@ export const getSavedResumes = (uid) => {
     );
 
     // Return unsubscribe function for Firestore snapshot listener
-    return unsubscribe;
+    return () => unsubscribe();
   });
 };
