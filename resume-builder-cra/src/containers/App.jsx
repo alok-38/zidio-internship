@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { Suspense, lazy } from "react";
+import { Route, Routes } from "react-router-dom";
+
+// Lazy load components
+const HomeScreen = lazy(() => import("../pages/HomeScreen"));
+const Authentication = lazy(() => import("../pages/Authentication"));
 
 const App = () => {
   return (
-	<div className='text-5xl w-screen items-center justify-center flex h-screen'>App</div>
-  )
-}
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/*" element={<HomeScreen />} />
+        <Route path="/auth" element={<Authentication />} />
+      </Routes>
+    </Suspense>
+  );
+};
 
-export default App
+export default App;
