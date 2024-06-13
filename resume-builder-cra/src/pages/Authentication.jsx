@@ -1,6 +1,8 @@
 import React from "react";
 import { Logo } from "../assets";
 import { Footer } from "../containers";
+import { AuthButtonWithProvider } from "../components";
+import { FaChevronRight, FaGithub, FaGoogle } from "react-icons/fa6";
 
 const Authentication = () => {
   return (
@@ -15,7 +17,19 @@ const Authentication = () => {
         <p className="text-base text-txtPrimary">
           express way to create resume
         </p>
-        <p className="text-2xl text-gray-600">Authenticate</p>
+        <div className="w-full lg:w-96 p-4 rounded-md flex flex-col items-center justify-start gap-6">
+          <AuthButtonWithProvider
+            Icon={FaGoogle}
+            label={"Signin with Google"}
+            provider={"GoogleAuthProvider"}
+          />
+
+          <AuthButtonWithProvider
+            Icon={FaGithub}
+            label={"Signin with GitHub"}
+            provider={"GitHubAuthProvider"}
+          />
+        </div>
       </div>
       {/* footer */}
       <Footer />
