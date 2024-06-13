@@ -2,7 +2,7 @@ import React from "react";
 import { Logo } from "../assets";
 import { Footer } from "../containers";
 import { AuthButtonWithProvider } from "../components";
-import { FaChevronRight, FaGithub, FaGoogle } from "react-icons/fa6";
+import { FaGithub, FaGoogle } from "react-icons/fa6";
 
 const Authentication = () => {
   return (
