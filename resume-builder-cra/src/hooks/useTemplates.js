@@ -12,15 +12,17 @@ const useTemplates = () => {
       } catch (error) {
         console.log(error.message);
         toast.error("Something went wrong...");
+        throw new Error("Error fetching templates");
       }
     },
     { refetchOnWindowFocus: false }
   );
+
   return {
     data,
     isLoading,
     isError,
-    refetch,
+    fetchTemplates: refetch, // Expose refetch as fetchTemplates
   };
 };
 
