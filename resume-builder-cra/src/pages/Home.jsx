@@ -1,9 +1,14 @@
-import React from 'react'
+import React from "react";
+import Header from "../components/Header";
 
 const Home = () => {
   return (
-	<div>Home</div>
-  )
-}
+    <div className="w-full flex flex-col items-center justify-center">
+      {/* header */}
+      <Header />
+      <main>{/* main component */}</main>
+    </div>
+  );
+};
 
-export default Home
+export default Home;
