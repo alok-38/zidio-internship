@@ -4,9 +4,9 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import CommonLayout from "@/components/common-layout";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
-const defaultFontFamily = "Helvetica, sans-serif";
 
 export const metadata = {
   title: "Job Portal",
@@ -15,22 +15,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <>
+    <ClerkProvider>
       <html lang="en">
-        <head>
-          <style>{`.${inter.className} { font-family: ${
-            inter.fontFamily || defaultFontFamily
-          }; }`}</style>
-        </head>
         <body className={inter.className}>
-          <ClerkProvider>
-            <Suspense fallback={<Loading />}>
-              <CommonLayout />
-              {children}
-            </Suspense>
-          </ClerkProvider>
+          <Suspense fallback={<Loading />}>
+            <CommonLayout attribute="class" defaultTheme="system" />
+            {children}
+          </Suspense>
+          <Toaster />
         </body>
       </html>
-    </>
+    </ClerkProvider>
   );
 }
