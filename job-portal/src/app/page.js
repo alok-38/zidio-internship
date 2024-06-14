@@ -1,9 +1,21 @@
-import { currentUser } from "@clerk/nextjs/server";
+"use client";
+import { useClerk } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default async function Page() {
-  const user = await currentUser();
+function Home() {
+  const { user, isLoading } = useClerk();
+  const profileInfo = null;
 
-  if (!user) return <div>Not signed in</div>;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  return <div>Hello {user?.firstName}</div>;
+  return (
+    <section>
+      <h1>{user ? `Welcome, ${user.id}!` : "Guest"}</h1>
+      <p>Main Content</p>
+    </section>
+  );
 }
+
+export default Home;
