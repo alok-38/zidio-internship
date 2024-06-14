@@ -15,18 +15,22 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <style>{`.${inter.className} { font-family: ${inter.fontFamily || defaultFontFamily}; }`}</style>
-      </head>
-      <body className={inter.className}>
-        <ClerkProvider>
-          <Suspense fallback={<Loading />}>
-            <CommonLayout />
-            {children}
-          </Suspense>
-        </ClerkProvider>
-      </body>
-    </html>
+    <>
+      <html lang="en">
+        <head>
+          <style>{`.${inter.className} { font-family: ${
+            inter.fontFamily || defaultFontFamily
+          }; }`}</style>
+        </head>
+        <body className={inter.className}>
+          <ClerkProvider>
+            <Suspense fallback={<Loading />}>
+              <CommonLayout />
+              {children}
+            </Suspense>
+          </ClerkProvider>
+        </body>
+      </html>
+    </>
   );
 }

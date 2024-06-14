@@ -1,3 +1,9 @@
-export default function Home() {
-  return <section>MainContent</section>;
+import { currentUser } from "@clerk/nextjs/server";
+
+export default async function Page() {
+  const user = await currentUser();
+
+  if (!user) return <div>Not signed in</div>;
+
+  return <div>Hello {user?.firstName}</div>;
 }
