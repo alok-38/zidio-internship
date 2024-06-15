@@ -22,14 +22,14 @@ const Authentication = () => {
         </p>
         <div className="w-full lg:w-96 rounded-md p-2 flex flex-col items-center justify-start gap-6">
           {/* Google Sign-in Button */}
-          <button className="flex items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors duration-300 ease-in-out bg-transparent hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:shadow-md transform active:scale-95">
+          <button className="flex  items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-blue-500 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 ease-in-out bg-transparent hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:shadow-md transform active:scale-95">
             <FaGoogle className="mr-2 text-blue-500" />
             <span className="flex-1">Sign-in with Google</span>
             <FaChevronRight className="ml-2" />
           </button>
 
           {/* GitHub Sign-in Button */}
-          <button className="flex items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors duration-300 ease-in-out bg-transparent hover:bg-gray-100 hover:text-gray-800 hover:border-gray-400 hover:shadow-md transform active:scale-95">
+          <button className="flex items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-300 ease-in-out bg-transparent hover:bg-gray-100 hover:text-gray-800 hover:border-gray-400 hover:shadow-md transform active:scale-95">
             <FaGithub className="mr-2 text-gray-600" />
             <span className="flex-1">Sign-in with GitHub</span>
             <FaChevronRight className="ml-2" />
