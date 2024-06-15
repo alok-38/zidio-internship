@@ -9,7 +9,7 @@ export const getUserDetail = () => {
       } else {
         reject(new Error("User is not authenticated"));
       }
-      //   make sure to unsubscribe from the listener (to prevent memory leaks)
+      // make sure to unsubscribe from the listener (to prevent memory leaks)
       unsubscribe();
     });
   });
