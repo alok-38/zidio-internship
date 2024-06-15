@@ -1,14 +1,15 @@
 import React from "react";
-import { FaGoogle, FaGithub, FaChevronRight } from "react-icons/fa";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 import { Footer } from "../containers";
 import Logo from "../assets/img/logo.png";
+import AuthButtonWithProvider from "../components/AuthButtonWithProvider";
 
 const Authentication = () => {
   return (
     <div className="auth-section">
       {/* Top section */}
       <img
-        className="w-12 h-auto object-contain transition-colors duration-300 ease-in-out hover:bg-gray-200 rounded-full p-1"
+        className="w-12 h-auto object-contain transition-all duration-300 ease-in-out hover:bg-gray-200 rounded-full p-1"
         src={Logo}
         alt="logo"
       />
@@ -21,19 +22,16 @@ const Authentication = () => {
           Innovative way to create resume
         </p>
         <div className="w-full lg:w-96 rounded-md p-2 flex flex-col items-center justify-start gap-6">
-          {/* Google Sign-in Button */}
-          <button className="w-full flex items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-blue-500 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-transform duration-300 ease-in-out bg-transparent hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:shadow-md transform-gpu hover:scale-105 active:scale-95">
-            <FaGoogle className="mr-2" />
-            <span className="flex-1">Sign-in with Google</span>
-            <FaChevronRight className="ml-2" />
-          </button>
-
-          {/* GitHub Sign-in Button */}
-          <button className="w-full flex items-center justify-between px-4 py-3 rounded-md border-2 text-gray-800 border-gray-800 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-transform duration-300 ease-in-out bg-transparent hover:bg-black hover:text-white hover:border-gray-400 hover:shadow-md transform-gpu hover:scale-105 active:scale-95">
-            <FaGithub className="mr-2" />
-            <span className="flex-1">Sign-in with GitHub</span>
-            <FaChevronRight className="ml-2" />
-          </button>
+          <AuthButtonWithProvider
+            Icon={FaGoogle}
+            label={"Sign-In with Google"}
+            provider={"GoogleAuthProvider"}
+          />
+          <AuthButtonWithProvider
+            Icon={FaGithub}
+            label={"Sign-In with GitHub"}
+            provider={"GitHubAuthProvider"}
+          />
         </div>
       </div>
       {/* Footer section */}
