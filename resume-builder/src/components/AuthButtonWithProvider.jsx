@@ -1,7 +1,11 @@
 import React from "react";
 import { FaChevronRight } from "react-icons/fa";
+import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 
 const AuthButtonWithProvider = ({ Icon, label, provider }) => {
+  const googleAuthProvider = new GoogleAuthProvider();
+  const githubAuthProvider = new GithubAuthProvider();
+
   const handleClick = async () => {
     switch (provider) {
       case "GoogleAuthProvider":
