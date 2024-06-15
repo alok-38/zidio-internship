@@ -3,6 +3,7 @@ import { FaGoogle, FaGithub } from "react-icons/fa";
 import { Footer } from "../containers";
 import Logo from "../assets/img/logo.png";
 import AuthButtonWithProvider from "../components/AuthButtonWithProvider";
+import { toast } from "react-toastify";
 
 const Authentication = () => {
   return (
@@ -34,6 +35,7 @@ const Authentication = () => {
           />
         </div>
       </div>
+      <button onClick={() => toast.success("Woa, its too easy to integrate")}>Toast me!</button>
       {/* Footer section */}
       <Footer />
     </div>
