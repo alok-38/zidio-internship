@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { Footer } from "../containers";
 import Logo from "../assets/img/logo.png";
-import AuthButtonWithProvider from "../components/AuthButtonWithProvider";
 import useUser from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
+import { MainSpinner, AuthButtonWithProvider } from "../components";
 
 const Authentication = () => {
   const { data, isLoading } = useUser();
@@ -15,6 +15,10 @@ const Authentication = () => {
       navigate("/", { replace: true });
     }
   }, [isLoading, data, navigate]); // Added 'navigate' to the dependency array
+
+  if (isLoading) {
+    return <MainSpinner />;
+  }
 
   return (
     <div className="auth-section">
