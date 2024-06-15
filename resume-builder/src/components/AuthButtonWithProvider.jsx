@@ -2,6 +2,20 @@ import React from "react";
 import { FaChevronRight } from "react-icons/fa";
 
 const AuthButtonWithProvider = ({ Icon, label, provider }) => {
+  const handleClick = async () => {
+    switch (provider) {
+      case "GoogleAuthProvider":
+        console.log("Inside the Google auth");
+        break;
+      case "GitHubAuthProvider":
+        console.log("Inside the GitHub auth");
+        break;
+      default:
+        console.log("Inside the Google auth");
+        break;
+    }
+  };
+
   const getButtonStyles = () => {
     switch (provider) {
       case "GoogleAuthProvider":
@@ -26,6 +40,7 @@ const AuthButtonWithProvider = ({ Icon, label, provider }) => {
 
   return (
     <button
+      onClick={handleClick}
       className={`w-full px-4 py-3 rounded-md flex items-center justify-between cursor-pointer outline-none group transition-all duration-300 ease-in-out ${getButtonStyles()}`}
     >
       <Icon
