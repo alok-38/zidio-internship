@@ -1,5 +1,0 @@
-- Environment Setup
-- Github Configuration
-- Create React App
-- TailwindCSS, React Router, React Icons, Firebase, Framer motions
-- Firebase Project
