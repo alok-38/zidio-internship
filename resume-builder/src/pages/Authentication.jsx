@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { Footer } from "../containers";
 import Logo from "../assets/img/logo.png";
 import AuthButtonWithProvider from "../components/AuthButtonWithProvider";
-import { toast } from "react-toastify";
+import useUser from "../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 const Authentication = () => {
+  const { data, isLoading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && data) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, data, navigate]); // Added 'navigate' to the dependency array
+
   return (
     <div className="auth-section">
       {/* Top section */}
@@ -35,7 +45,6 @@ const Authentication = () => {
           />
         </div>
       </div>
-      <button onClick={() => toast.success("Woa, its too easy to integrate")}>Toast me!</button>
       {/* Footer section */}
       <Footer />
     </div>

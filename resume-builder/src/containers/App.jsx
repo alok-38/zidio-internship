@@ -21,7 +21,7 @@ function App() {
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Suspense>
-      <ToastContainer />
+      <ToastContainer position="top-right" theme="dark" />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
