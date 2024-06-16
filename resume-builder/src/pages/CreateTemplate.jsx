@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CreateTemplate = () => {
+  const [formData, setFormData] = useState({
+    title: "",
+    imageURL: null,
+  });
+  // handling the input field change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevRec) => ({ ...prevRec, [name]: value }));
+  };
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
       {/* left container */}
@@ -23,6 +32,13 @@ const CreateTemplate = () => {
             Template 1
           </p>
         </div>
+        {/* template title section */}
+        <input
+          type="text"
+          placeholder="Template Title"
+          value={formData.title}
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* right container */}
