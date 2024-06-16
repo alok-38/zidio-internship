@@ -9,7 +9,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
-import { async } from "@firebase/util";
+import { initialTags } from "../utils/helpers";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -193,6 +193,14 @@ const CreateTemplate = () => {
               )}
             </React.Fragment>
           )}
+        </div>
+        {/* tags */}
+        <div className="w-full flex items-center flex-wrap gap-2">
+          {initialTags.map((tag, index) => (
+            <div key={index}>
+              <p>{tag}</p>
+            </div>
+          ))}
         </div>
       </div>
 
