@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { PuffLoader } from "react-spinners";
 import { HiLogout } from "react-icons/hi";
-import { slideUpDownMenu } from "../animations";
+import { FadeInOutWIthOpacity, slideUpDownMenu } from "../animations";
 import { auth } from "../config/firebase.config";
 import { useQueryClient } from "react-query";
 
@@ -126,7 +126,13 @@ const Header = () => {
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button className="hover:text-orange-600">Login</motion.button>
+                <motion.button
+                  {...FadeInOutWIthOpacity}
+                  className=" px-4 py-2 rounded-md border border-orange-400 hover:bg-orange-400 hover:text-white
+                  hover:shadow-md active:scale-95 duration-150" type="button"
+                >
+                  Login
+                </motion.button>
               </Link>
             )}
           </React.Fragment>
