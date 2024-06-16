@@ -1,5 +1,3 @@
-// CreateTemplate.jsx
-
 import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
 import { FaTrash, FaUpload } from "react-icons/fa";
@@ -13,9 +11,9 @@ import {
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useQueryClient } from "react-query"; // Import useQueryClient from react-query
+import { useQueryClient } from "react-query";
 import { db } from "../config/firebase.config";
-import useTemplates from "../hooks/useTemplates"; // Import your custom hook
+import useTemplates from "../hooks/useTemplates";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -34,33 +32,35 @@ const CreateTemplate = () => {
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
-  const queryClient = useQueryClient(); // Initialize useQueryClient
+  const queryClient = useQueryClient();
 
-  // Custom hook for fetching templates using React Query
-  const { data: templates, isLoading: templatesLoading, error: templatesError, refetch: refetchTemplates } = useTemplates();
+  const {
+    data: templates,
+    isLoading: templatesLoading,
+    error: templatesError,
+    refetch: refetchTemplates,
+  } = useTemplates();
 
-  // Handling the input field change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  // Handle the image file changes
   const handleFileSelect = async (e) => {
     setImageAsset({ isImageLoading: true, uri: null, progress: 0 });
     const file = e.target.files[0];
     if (file && isAllowed(file)) {
-      const storageRef = ref(
-        storage,
-        `Templates/${Date.now()}-${file.name}`
-      );
+      const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageAsset((prevAsset) => ({ ...prevAsset, progress }));
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            progress,
+          }));
         },
         (error) => {
           handleUploadError(error);
@@ -74,7 +74,6 @@ const CreateTemplate = () => {
     }
   };
 
-  // Handle upload errors
   const handleUploadError = (error) => {
     if (error.message.includes("storage/unauthorized")) {
       toast.error(`Error: Authorization Revoked`);
@@ -87,7 +86,6 @@ const CreateTemplate = () => {
     }));
   };
 
-  // Handle upload success
   const handleUploadSuccess = (uploadTask) => {
     getDownloadURL(uploadTask.snapshot.ref)
       .then((downloadURL) => {
@@ -110,9 +108,11 @@ const CreateTemplate = () => {
       });
   };
 
-  // Action to delete an image from the cloud
   const deleteAnImageObject = async () => {
-    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
+    setImageAsset((prevAsset) => ({
+      ...prevAsset,
+      isImageLoading: true,
+    }));
     const deleteRef = ref(storage, imageAsset.uri);
     deleteObject(deleteRef)
       .then(() => {
@@ -140,7 +140,6 @@ const CreateTemplate = () => {
     return allowedTypes.includes(file.type);
   };
 
-  // Handle selected tags
   const handleSelectedTags = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((selected) => selected !== tag));
@@ -149,7 +148,6 @@ const CreateTemplate = () => {
     }
   };
 
-  // Save template data to Firestore
   const pushToCloud = async () => {
     const timestamp = serverTimestamp();
     const id = `${Date.now()}`;
@@ -169,7 +167,7 @@ const CreateTemplate = () => {
       setFormData({ title: "", imageURL: null });
       setImageAsset({ isImageLoading: false, uri: null, progress: 0 });
       setSelectedTags([]);
-      queryClient.invalidateQueries("templates"); // Invalidate templates query to trigger refetch
+      queryClient.invalidateQueries("templates");
       toast.success("Template saved successfully!");
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -179,12 +177,10 @@ const CreateTemplate = () => {
 
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
-      {/* left container */}
       <div className="col-span-12 lg:col-span-4 2xl:col-span-3 w-full flex flex-1 items-center justify-start flex-col gap-4 px-2">
         <div className="w-full">
           <p className="text-lg text-txtPrimary">Create a new Template</p>
         </div>
-        {/* template id section*/}
         <div className="w-full flex items-center justify-end">
           <p className="text-base text-txtLight uppercase font-semibold">
             TempID:{" "}
@@ -195,7 +191,6 @@ const CreateTemplate = () => {
               : "Template1"}
           </p>
         </div>
-        {/* template title section */}
         <input
           className="w-full px-4 py-3 rounded-md bg-transparent border-2 focus:border-orange-400 text-lg text-txtPrimary focus:text-txtDark focus:shadow-md outline-none"
           type="text"
@@ -204,7 +199,6 @@ const CreateTemplate = () => {
           value={formData.title}
           onChange={handleInputChange}
         />
-        {/* file uploader section */}
         <div
           className={`relative w-full bg-orange-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-orange-300 cursor-pointer flex items-center justify-center ${
             isUploadContainerHovered ? "hovered" : ""
@@ -260,7 +254,6 @@ const CreateTemplate = () => {
             </React.Fragment>
           )}
         </div>
-        {/* tags */}
         <div className="w-full flex items-center flex-wrap gap-2">
           {initialTags.map((tag, index) => (
             <div
@@ -274,7 +267,6 @@ const CreateTemplate = () => {
             </div>
           ))}
         </div>
-        {/* Button actions */}
         <button
           type="button"
           className="w-full bg-orange-400 hover:bg-orange-600 text-white rounded-md py-3 transition duration-300 ease-in-out transform hover:scale-100 focus:outline-none focus:ring-2 focus:ring-orange-500 active:transform active:scale-90"
@@ -284,9 +276,26 @@ const CreateTemplate = () => {
         </button>
       </div>
 
-      {/* right container */}
-      <div className="col-span-12 lg:col-span-8 2xl:col-span-9">
-        Right Container Content
+      <div className="col-span-12 lg:col-span-8 2xl:col-span-9 w-full flex-1 py-4">
+        {templatesLoading ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <PuffLoader color="orange" size={40} />
+          </div>
+        ) : (
+          <React.Fragment>
+            {templates && templates.length > 0 ? (
+              <React.Fragment></React.Fragment>
+            ) : (
+              <div className="w-full h-full flex flex-col gap-6 items-center justify-center">
+                <PuffLoader color="orange" size={40}>
+                  <p className="text-xl tracking-wider capitalize text-txtPrimary">
+                    No data
+                  </p>
+                </PuffLoader>
+              </div>
+            )}
+          </React.Fragment>
+        )}
       </div>
     </div>
   );
