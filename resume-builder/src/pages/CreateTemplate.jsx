@@ -14,12 +14,19 @@ const CreateTemplate = () => {
     progress: 0,
   });
 
-  const [isUploadHovered, setIsUploadHovered] = useState(false);
+  const [isUploadContainerHovered, setIsUploadContainerHovered] =
+    useState(false);
 
   // handling the input field change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevRec) => ({ ...prevRec, [name]: value }));
+  };
+
+  // handle the image file changes
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    console.log(file);
   };
 
   return (
@@ -31,7 +38,7 @@ const CreateTemplate = () => {
         </div>
         {/* template id section*/}
         <div className="w-full flex items-center justify-end">
-          <p className="text-base text-txtLight  uppercase font-semibold">
+          <p className="text-base text-txtLight uppercase font-semibold">
             TempID:{" "}
           </p>
           <p className="text-sm text-txtDark capitalize font-bold">Template1</p>
@@ -46,7 +53,13 @@ const CreateTemplate = () => {
           onChange={handleInputChange}
         />
         {/* file uploader section */}
-        <div className="w-full bg-orange-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-orange-300 cursor-pointer flex items-center justify-center">
+        <div
+          className={`w-full bg-orange-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-orange-300 cursor-pointer flex items-center justify-center ${
+            isUploadContainerHovered ? "hovered" : ""
+          }`}
+          onMouseEnter={() => setIsUploadContainerHovered(true)}
+          onMouseLeave={() => setIsUploadContainerHovered(false)}
+        >
           {imageAsset.isImageLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
               <PuffLoader color="orange" size={40} />
@@ -56,18 +69,22 @@ const CreateTemplate = () => {
             !imageAsset?.uri && (
               <label className="w-full cursor-pointer h-full">
                 <div className="flex flex-col items-center justify-center h-full w-full">
-                  <div
-                    className="flex items-center justify-center cursor-pointer flex-col"
-                    onMouseEnter={() => setIsUploadHovered(true)}
-                    onMouseLeave={() => setIsUploadHovered(false)}
-                  >
+                  <div className="flex items-center justify-center cursor-pointer flex-col">
                     <FaUpload
                       className={`text-5xl ${
-                        isUploadHovered ? "text-orange-600" : "text-gray-400"
+                        isUploadContainerHovered
+                          ? "text-orange-600"
+                          : "text-gray-400"
                       }`}
                     />
                   </div>
                 </div>
+                <input
+                  type="file"
+                  className="w-0 h-0"
+                  accept=".jpeg,.jpg,.png"
+                  onChange={handleFileSelect}
+                />
               </label>
             )
           )}
