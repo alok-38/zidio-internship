@@ -35,7 +35,7 @@ const Header = () => {
         ) : (
           <React.Fragment>
             {data ? (
-              <motion.div>
+              <motion.div className="relative">
                 {data?.photoURL ? (
                   <div className="w-12 h-12 rounded-md relative flex items-center justify-center cursor-pointer">
                     <img
@@ -50,6 +50,15 @@ const Header = () => {
                     <p className="text-lg text-white">{data?.displayName[0]}</p>
                   </div>
                 )}
+                {/* dropdown */}
+                <AnimatePresence>
+                  <motion.div
+                    className="absolute px-4 py-3 rounded-mb bg-orange-50 right-0 top-16
+                fle flex-col justify-start items-center gap-3 w-64 pt-12"
+                  >
+
+                  </motion.div>
+                </AnimatePresence>
               </motion.div>
             ) : (
               <Link to={"/auth"}>
