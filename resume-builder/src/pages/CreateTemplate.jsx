@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CreateTemplate = () => {
+  const [formData, setFormData] = useState({
+    title: "",
+    imageURL: null,
+  });
+  // handling the input field change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevRec) => ({ ...prevRec, [name]: value }));
+  };
   return (
     <div
       className="w-full px-4 lg:px-10 2xl:px-32
@@ -16,10 +25,22 @@ const CreateTemplate = () => {
         </div>
         {/* template id section*/}
         <div className="w-full flex items-center justify-end">
-          <p className="text-base text-txtLight uppercase font-semibold">
+          <p className="text-base text-txtLight  uppercase font-semibold">
             TempID:{" "}
           </p>
+          <p className="text-sm text-txtDark capitalize font-bold">Template1</p>
         </div>
+        {/* template tile section */}
+        <input
+          className="w-full px-4 py-3 rounded-md bg-transparent
+        border-2 focus:border-orange-400 text-lg text-txtPrimary focus:text-txtDark
+        focus:shadow-md outline-none"
+          type="text"
+          name="title"
+          placeholder="Template Title"
+          value={formData.title}
+          onChange={handleInputChange}
+        />
       </div>
       {/* right container */}
       <div className="col-span-12 lg:col-span-8 2xl:col-span-9">2</div>
