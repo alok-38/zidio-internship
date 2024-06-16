@@ -72,10 +72,16 @@ const Header = () => {
                       </div>
                     )}
                     {data?.displayName && (
-                      <p className="text-lg text-white">
+                      <p className="text-3xl text-orange-600">
                         {data?.displayName[0]}
                       </p>
                     )}
+
+                    {/* menus */}
+                    <div className="w-full flex flex-col items-start gap-8 pt-6">
+                      <Link className="text-txtLight hover:text-orange-600 text-base" to={"/profile"}>My Account</Link>
+                      <Link className="text-txtLight hover:text-orange-600 text-base" to={"/template/create"}>Add New Template</Link>
+                    </div>
                   </motion.div>
                 </AnimatePresence>
               </motion.div>
