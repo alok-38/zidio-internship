@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
-import { FaUpload } from "react-icons/fa";
+import { FaTrash, FaUpload } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { storage } from "../config/firebase.config";
+import { async } from "@firebase/util";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -78,6 +84,32 @@ const CreateTemplate = () => {
     }
   };
 
+  // Action to delete an image from the cloud
+  const deleteAnImageObject = async () => {
+    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
+    const deleteRef = ref(storage, imageAsset.uri);
+    deleteObject(deleteRef)
+      .then(() => {
+        toast.success("Image removed");
+        setTimeout(() => {
+          // Change setImmediate to setTimeout
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            progress: 0,
+            uri: null,
+            isImageLoading: false,
+          }));
+        }, 2000);
+      })
+      .catch((error) => {
+        toast.error(`Error deleting image: ${error.message}`);
+        setImageAsset((prevAsset) => ({
+          ...prevAsset,
+          isImageLoading: false,
+        }));
+      });
+  };
+
   const isAllowed = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     return allowedTypes.includes(file.type);
@@ -108,7 +140,7 @@ const CreateTemplate = () => {
         />
         {/* file uploader section */}
         <div
-          className={`w-full bg-orange-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-orange-300 cursor-pointer flex items-center justify-center ${
+          className={`relative w-full bg-orange-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-dotted border-orange-300 cursor-pointer flex items-center justify-center ${
             isUploadContainerHovered ? "hovered" : ""
           }`}
           onMouseEnter={() => setIsUploadContainerHovered(true)}
@@ -119,32 +151,47 @@ const CreateTemplate = () => {
               <PuffLoader color="orange" size={40} />
               <p>{imageAsset.progress.toFixed(2)}%</p>
             </div>
-          ) : imageAsset.uri ? (
-            <img
-              src={imageAsset.uri}
-              alt="Uploaded"
-              className="max-h-full max-w-full"
-            />
           ) : (
-            <label className="w-full cursor-pointer h-full">
-              <div className="flex flex-col items-center justify-center h-full w-full">
-                <div className="flex items-center justify-center cursor-pointer flex-col">
-                  <FaUpload
-                    className={`text-5xl ${
-                      isUploadContainerHovered
-                        ? "text-orange-600"
-                        : "text-gray-400"
-                    }`}
+            <React.Fragment>
+              {imageAsset.uri && (
+                <img
+                  src={imageAsset.uri}
+                  alt="Uploaded"
+                  className="max-h-full max-w-full"
+                />
+              )}
+              {!imageAsset.uri && (
+                <label className="w-full cursor-pointer h-full">
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <div className="flex items-center justify-center cursor-pointer flex-col">
+                      <FaUpload
+                        className={`text-5xl ${
+                          isUploadContainerHovered
+                            ? "text-orange-600"
+                            : "text-gray-400"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    className="w-0 h-0"
+                    accept=".jpeg,.jpg,.png"
+                    onChange={handleFileSelect}
                   />
+                </label>
+              )}
+              {imageAsset.uri && (
+                <div
+                  className="absolute top-4 right-4 w-8 h-8 rounded-md
+          flex items-center justify-center bg-red-400 cursor-pointer
+          hover:bg-red-600 transition duration-300"
+                  onClick={deleteAnImageObject}
+                >
+                  <FaTrash className="text-white" />
                 </div>
-              </div>
-              <input
-                type="file"
-                className="w-0 h-0"
-                accept=".jpeg,.jpg,.png"
-                onChange={handleFileSelect}
-              />
-            </label>
+              )}
+            </React.Fragment>
           )}
         </div>
       </div>
