@@ -10,6 +10,8 @@ import {
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
+import { serverTimestamp } from "firebase/firestore";
+import { useTemplates } from "../api";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +29,13 @@ const CreateTemplate = () => {
 
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
+
+  const {
+    data: templates,
+    isError: templatesIsError,
+    isLoading: templatesIsLoading,
+    refetch: templatesRefetch,
+  } = useTemplates(); // Using the useTemplates hook
 
   // Handling the input field change
   const handleInputChange = (e) => {
@@ -94,7 +103,6 @@ const CreateTemplate = () => {
       .then(() => {
         toast.success("Image removed");
         setTimeout(() => {
-          // Change setImmediate to setTimeout
           setImageAsset((prevAsset) => ({
             ...prevAsset,
             progress: 0,
@@ -119,9 +127,28 @@ const CreateTemplate = () => {
 
   const handleSelectedTags = (tag) => {
     // check if the tag is selected
-    if (selectedTags.includes) {
+    if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((selected) => selected !== tag));
+    } else {
+      setSelectedTags([...selectedTags, tag]);
     }
+  };
+
+  const pushToCloud = async () => {
+    const timestamp = serverTimestamp();
+    const id = `${Date.now()}`;
+    const _doc = {
+      _id: id,
+      title: formData.title,
+      imageURL: imageAsset.uri,
+      tags: selectedTags,
+      name: "Template1",
+      timestamp: timestamp,
+    };
+
+    // Placeholder function to save to cloud
+    // Implement your logic to save the document to Firebase or other backend
+    console.log("Saving document:", _doc);
   };
 
   return (
@@ -206,11 +233,25 @@ const CreateTemplate = () => {
         {/* tags */}
         <div className="w-full flex items-center flex-wrap gap-2">
           {initialTags.map((tag, index) => (
-            <div key={index}>
-              <p>{tag}</p>
+            <div
+              className={`border-2 border-orange-400 p-1 rounded-md cursor-pointer ${
+                selectedTags.includes(tag) ? "bg-orange-400" : ""
+              }`}
+              key={index}
+              onClick={() => handleSelectedTags(tag)}
+            >
+              <p className="text-sm text-txtPrimary">{tag}</p>
             </div>
           ))}
         </div>
+        {/* Button actions */}
+        <button
+          type="button"
+          className="w-full bg-orange-400 hover:bg-orange-600 text-white rounded-md py-3 transition duration-300 ease-in-out transform hover:scale-100 focus:outline-none focus:ring-2 focus:ring-orange-500 active:transform active:scale-90"
+          onClick={pushToCloud}
+        >
+          Save
+        </button>
       </div>
 
       {/* right container */}
