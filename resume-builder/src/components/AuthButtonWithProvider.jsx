@@ -1,5 +1,3 @@
-// AuthButtonWithProvider.js
-
 import React from "react";
 import { FaChevronRight } from "react-icons/fa";
 import {

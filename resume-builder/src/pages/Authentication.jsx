@@ -1,5 +1,3 @@
-// Authentication.jsx
-
 import React, { useEffect } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { Footer } from "../containers";
@@ -7,8 +5,6 @@ import Logo from "../assets/img/logo.png";
 import useUser from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { MainSpinner, AuthButtonWithProvider } from "../components";
-import FirebaseTestComponent from "../components/FirebaseTestComponent";
-import { auth } from "../config/firebase.config"; // Ensure auth is imported
 
 const Authentication = () => {
   const { data, isLoading } = useUser();
@@ -53,8 +49,7 @@ const Authentication = () => {
           />
         </div>
       </div>
-      {/* Include FirebaseTestComponent for testing */}
-      <FirebaseTestComponent />
+
       {/* Footer section */}
       <Footer />
     </div>
