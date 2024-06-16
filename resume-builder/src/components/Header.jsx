@@ -4,6 +4,7 @@ import { Logo } from "../assets";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { PuffLoader } from "react-spinners";
+import { HiLogout } from "react-icons/hi";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
@@ -79,8 +80,24 @@ const Header = () => {
 
                     {/* menus */}
                     <div className="w-full flex flex-col items-start gap-8 pt-6">
-                      <Link className="text-txtLight hover:text-orange-600 text-base" to={"/profile"}>My Account</Link>
-                      <Link className="text-txtLight hover:text-orange-600 text-base" to={"/template/create"}>Add New Template</Link>
+                      <Link
+                        className="text-txtLight hover:text-orange-600 text-base whitespace-nowrap"
+                        to={"/profile"}
+                      >
+                        My Account
+                      </Link>
+                      <Link
+                        className="text-txtLight hover:text-orange-600 text-base whitespace-nowrap"
+                        to={"/template/create"}
+                      >
+                        Add New Template
+                      </Link>
+                      <div className="w-full px-2 py-2 border-t border-orange-300 flex items-center justify-between cursor-pointer">
+                        <p className="group-hover:text-orange-600 text-txtLight hover:text-orange-600 text-base whitespace-nowrap">
+                          Sign Out
+                        </p>
+                        <HiLogout className="group-hover:text-orange-600 text-txtLight hover:text-orange-600" />
+                      </div>
                     </div>
                   </motion.div>
                 </AnimatePresence>
