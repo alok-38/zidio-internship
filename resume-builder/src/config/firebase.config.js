@@ -2,6 +2,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -12,8 +13,11 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APPID,
 };
 
-const app = getApps.length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Initialize Firebase app
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+
+// Initialize Firebase services
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, db };
+export { app, auth, db };

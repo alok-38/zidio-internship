@@ -12,7 +12,13 @@ const CreateTemplate = () => {
       flex flex-1 items-center justify-start flex-col gap-4 px-2"
       >
         <div className="w-full">
-          <p>Create a new Template</p>
+          <p className="text-lg text-txtPrimary">Create a new Template</p>
+        </div>
+        {/* template id section*/}
+        <div className="w-full flex items-center justify-end">
+          <p className="text-base text-txtLight uppercase font-semibold">
+            TempID:{" "}
+          </p>
         </div>
       </div>
       {/* right container */}

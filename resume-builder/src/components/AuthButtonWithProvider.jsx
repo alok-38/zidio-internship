@@ -1,9 +1,12 @@
+// AuthButtonWithProvider.js
+
 import React from "react";
 import { FaChevronRight } from "react-icons/fa";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../config/firebase.config";
 
@@ -19,16 +22,16 @@ const AuthButtonWithProvider = ({ Icon, label, provider }) => {
             console.log(result);
           })
           .catch((err) => {
-            console.log(`Error: ${err.Message}`);
+            console.log(`Error: ${err.message}`);
           });
         break;
       case "GitHubAuthProvider":
-        await signInWithRedirect(auth, githubAuthProvider)
+        await signInWithPopup(auth, githubAuthProvider)
           .then((result) => {
             console.log(result);
           })
           .catch((err) => {
-            console.log(`Error: ${err.Message}`);
+            console.log(`Error: ${err.message}`);
           });
         break;
       default:
@@ -37,7 +40,7 @@ const AuthButtonWithProvider = ({ Icon, label, provider }) => {
             console.log(result);
           })
           .catch((err) => {
-            console.log(`Error: ${err.Message}`);
+            console.log(`Error: ${err.message}`);
           });
         break;
     }
