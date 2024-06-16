@@ -1,13 +1,12 @@
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { getTemplates } from "../api";
 
-const useTemplates = () => {
+const useTemplates = (fetchFunction) => {
   const { data, isLoading, isError, refetch } = useQuery(
     "templates",
     async () => {
       try {
-        const templates = await getTemplates();
+        const templates = await fetchFunction(); // Call the provided fetch function
         return templates;
       } catch (err) {
         console.error(err); // Log the error for debugging purposes

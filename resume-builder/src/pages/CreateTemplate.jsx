@@ -11,7 +11,7 @@ import {
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
 import { serverTimestamp } from "firebase/firestore";
-import { useTemplates } from "../api";
+import useTemplates from "../hooks/useTemplates"; // Correct import path
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -30,12 +30,32 @@ const CreateTemplate = () => {
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
+  // Example fetch function for templates
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch("/api/templates");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        return data;
+      } else {
+        throw new Error("Received non-JSON response");
+      }
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      throw error;
+    }
+  };
+
   const {
     data: templates,
-    isError: templatesIsError,
-    isLoading: templatesIsLoading,
-    refetch: templatesRefetch,
-  } = useTemplates(); // Using the useTemplates hook
+    isError: templatesError,
+    isLoading: templatesLoading,
+    refetch: refetchTemplates,
+  } = useTemplates(fetchTemplates); // Using the useTemplates hook with fetchTemplates function
 
   // Handling the input field change
   const handleInputChange = (e) => {
@@ -142,7 +162,10 @@ const CreateTemplate = () => {
       title: formData.title,
       imageURL: imageAsset.uri,
       tags: selectedTags,
-      name: "Template1",
+      name:
+        templates && templates.length > 0
+          ? `Template${templates.length + 1}`
+          : "Templates1",
       timestamp: timestamp,
     };
 
@@ -163,7 +186,11 @@ const CreateTemplate = () => {
           <p className="text-base text-txtLight uppercase font-semibold">
             TempID:{" "}
           </p>
-          <p className="text-sm text-txtDark capitalize font-bold">Template1</p>
+          <p className="text-sm text-txtDark capitalize font-bold">
+            {templates && templates.length > 0
+              ? `Templates${templates.length + 1}`
+              : "Template1"}
+          </p>
         </div>
         {/* template title section */}
         <input
