@@ -5,10 +5,21 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { PuffLoader } from "react-spinners";
 import { HiLogout } from "react-icons/hi";
+import { slideUpDownMenu } from "../animations";
+import { auth } from "../config/firebase.config";
+import { useQueryClient } from "react-query";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
   const [isMenu, setIsMenu] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const signOutUser = async () => {
+    await auth.signOut().then(() => {
+      queryClient.setQueryData("user", null);
+    });
+  };
 
   return (
     <header className="w-full flex items-center justify-between px-4 py-3 lg:px-8 border-b border-orange-300 bg-orange-50 z-50 gap-12 sticky top-0">
@@ -58,6 +69,7 @@ const Header = () => {
                 <AnimatePresence>
                   {isMenu && (
                     <motion.div
+                      {...slideUpDownMenu}
                       className="absolute px-4 py-3 rounded-md  bg-orange-50 right-0
                 top-14 flex flex-col items-center justify-start gap-3 w-64 pt-12"
                       onMouseLeave={() => setIsMenu(false)}
@@ -98,7 +110,10 @@ const Header = () => {
                         >
                           Add New Template
                         </Link>
-                        <div className="w-full px-2 py-2 border-t border-orange-300 flex items-center justify-between cursor-pointer">
+                        <div
+                          className="w-full px-2 py-2 border-t border-orange-300 flex items-center justify-between cursor-pointer"
+                          onClick={signOutUser}
+                        >
                           <p className="group-hover:text-orange-600 text-txtLight hover:text-orange-600 text-base whitespace-nowrap">
                             Sign Out
                           </p>
@@ -111,7 +126,7 @@ const Header = () => {
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button></motion.button>
+                <motion.button className="hover:text-orange-600">Login</motion.button>
               </Link>
             )}
           </React.Fragment>
