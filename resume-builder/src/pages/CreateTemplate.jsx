@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
 import { FaUpload } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config/firebase.config";
-import { progress } from "framer-motion";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -41,8 +40,29 @@ const CreateTemplate = () => {
             progress: (snapShot.bytesTransferred / snapShot.totalBytes) * 100,
           }));
         },
-        (error) => toast.error(`Error : ${error.message}`),
-        () => {}
+        (error) => {
+          if (error.message.includes("storage/unauthorized")) {
+            toast.error(`Error : Authorization Revoked`);
+          } else {
+            toast.error(`Error : ${error.message}`);
+          }
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageAsset((prevAsset) => ({
+              ...prevAsset,
+              uri: downloadURL,
+            }));
+          });
+
+          toast.success("Image uploaded");
+          setInterval(() => {
+            setImageAsset((preAsset) => ({
+              ...preAsset,
+              isImageLoading: false,
+            }));
+          }, 2000);
+        }
       );
     } else {
       toast.info("Invalid file format...");
