@@ -23,46 +23,24 @@ const Header = () => {
         <input
           type="text"
           placeholder="Search here..."
-          className="flex border border-gray-300 px-4 py-1 rounded-md flex-1 items-center justify-between bg-orange-50 border-none outline-none h-10 focus:outline-none"
+          className="flex border border-gray-300 px-4 py-1 rounded-md flex-1 items-center justify-between bg-orange-50 border-none outline-none h-10 focus:outline-none font-semibold"
         />
       </div>
       {/* profile */}
       <AnimatePresence>
         {isLoading ? (
-          <div className="flex items-center">
-            <PuffLoader color="orange" size={40} />
-          </div>
+          <PuffLoader color="orange" size={40} />
         ) : (
           <React.Fragment>
             {data ? (
-              <motion.div className="relative">
-                {data?.photoURL ? (
-                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center cursor-pointer">
-                    <img
-                      src={data?.photoURL}
-                      referrerPolicy="no-referrer"
-                      alt=""
-                      className="w-full h-full object-cover rounded-md "
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-full object-cover rounded-md bg-orange-600 shadow-md cursor-pointer">
-                    <p className="text-lg text-white">{data?.displayName[0]}</p>
-                  </div>
-                )}
-                {/* dropdown */}
-                <AnimatePresence>
-                  <motion.div
-                    className="absolute px-4 py-3 rounded-mb bg-orange-50 right-0 top-16
-                fle flex-col justify-start items-center gap-3 w-64 pt-12"
-                  >
-
-                  </motion.div>
-                </AnimatePresence>
+              <motion.div>
+                {data?.photoURL ? <div className="w-12 h-12 rounded-md relative flex items-center justify-center">
+                  <img src={data?.photoURL} referrerPolicy="no-referrer" className="w-full h-full object-cover rounded-md" alt="" />
+                </div> : <div></div>}
               </motion.div>
             ) : (
               <Link to={"/auth"}>
-                <motion.button>Login</motion.button>
+                <motion.button></motion.button>
               </Link>
             )}
           </React.Fragment>
