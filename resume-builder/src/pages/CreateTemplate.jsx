@@ -1,3 +1,5 @@
+// CreateTemplate.jsx
+
 import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
 import { FaTrash, FaUpload } from "react-icons/fa";
@@ -11,8 +13,9 @@ import {
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import useTemplates from "../hooks/useTemplates"; // Import your custom hook
+import { useQueryClient } from "react-query"; // Import useQueryClient from react-query
 import { db } from "../config/firebase.config";
+import useTemplates from "../hooks/useTemplates"; // Import your custom hook
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -31,13 +34,10 @@ const CreateTemplate = () => {
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
+  const queryClient = useQueryClient(); // Initialize useQueryClient
+
   // Custom hook for fetching templates using React Query
-  const {
-    templates,
-    isLoading: templatesLoading,
-    error: templatesError,
-    refetch: refetchTemplates,
-  } = useTemplates();
+  const { data: templates, isLoading: templatesLoading, error: templatesError, refetch: refetchTemplates } = useTemplates();
 
   // Handling the input field change
   const handleInputChange = (e) => {
@@ -50,7 +50,10 @@ const CreateTemplate = () => {
     setImageAsset({ isImageLoading: true, uri: null, progress: 0 });
     const file = e.target.files[0];
     if (file && isAllowed(file)) {
-      const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
+      const storageRef = ref(
+        storage,
+        `Templates/${Date.now()}-${file.name}`
+      );
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on(
         "state_changed",
@@ -60,41 +63,51 @@ const CreateTemplate = () => {
           setImageAsset((prevAsset) => ({ ...prevAsset, progress }));
         },
         (error) => {
-          if (error.message.includes("storage/unauthorized")) {
-            toast.error(`Error: Authorization Revoked`);
-          } else {
-            toast.error(`Error: ${error.message}`);
-          }
-          setImageAsset((prevAsset) => ({
-            ...prevAsset,
-            isImageLoading: false,
-          }));
+          handleUploadError(error);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              setImageAsset((prevAsset) => ({
-                ...prevAsset,
-                uri: downloadURL,
-              }));
-              toast.success("Image uploaded");
-            })
-            .catch((error) => {
-              toast.error(`Error: ${error.message}`);
-            })
-            .finally(() => {
-              setTimeout(() => {
-                setImageAsset((prevAsset) => ({
-                  ...prevAsset,
-                  isImageLoading: false,
-                }));
-              }, 2000);
-            });
+          handleUploadSuccess(uploadTask);
         }
       );
     } else {
       toast.info("Invalid file format");
     }
+  };
+
+  // Handle upload errors
+  const handleUploadError = (error) => {
+    if (error.message.includes("storage/unauthorized")) {
+      toast.error(`Error: Authorization Revoked`);
+    } else {
+      toast.error(`Error: ${error.message}`);
+    }
+    setImageAsset((prevAsset) => ({
+      ...prevAsset,
+      isImageLoading: false,
+    }));
+  };
+
+  // Handle upload success
+  const handleUploadSuccess = (uploadTask) => {
+    getDownloadURL(uploadTask.snapshot.ref)
+      .then((downloadURL) => {
+        setImageAsset((prevAsset) => ({
+          ...prevAsset,
+          uri: downloadURL,
+        }));
+        toast.success("Image uploaded");
+      })
+      .catch((error) => {
+        toast.error(`Error: ${error.message}`);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            isImageLoading: false,
+          }));
+        }, 2000);
+      });
   };
 
   // Action to delete an image from the cloud
@@ -127,8 +140,8 @@ const CreateTemplate = () => {
     return allowedTypes.includes(file.type);
   };
 
+  // Handle selected tags
   const handleSelectedTags = (tag) => {
-    // check if the tag is selected
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((selected) => selected !== tag));
     } else {
@@ -136,6 +149,7 @@ const CreateTemplate = () => {
     }
   };
 
+  // Save template data to Firestore
   const pushToCloud = async () => {
     const timestamp = serverTimestamp();
     const id = `${Date.now()}`;
@@ -155,7 +169,7 @@ const CreateTemplate = () => {
       setFormData({ title: "", imageURL: null });
       setImageAsset({ isImageLoading: false, uri: null, progress: 0 });
       setSelectedTags([]);
-      refetchTemplates(); // Trigger refetch of templates after successful save
+      queryClient.invalidateQueries("templates"); // Invalidate templates query to trigger refetch
       toast.success("Template saved successfully!");
     } catch (error) {
       console.error("Error adding document: ", error);

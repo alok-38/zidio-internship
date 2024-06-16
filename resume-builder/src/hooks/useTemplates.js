@@ -1,4 +1,4 @@
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "../config/firebase.config";
 import { useQuery } from "react-query";
 
@@ -6,9 +6,8 @@ const useTemplates = () => {
   return useQuery("templates", async () => {
     const templateRef = collection(db, "templates");
 
-    // Create a query with orderBy for 'timestamp'
-    const querySnapshot = await onSnapshot(
-      query(templateRef, orderBy("timestamp", "asc")),
+    const unsubscribe = onSnapshot(
+      templateRef,
       (querySnapshot) => {
         const templates = querySnapshot.docs.map((doc) => doc.data());
         // Resolve the templates array
@@ -20,13 +19,8 @@ const useTemplates = () => {
       }
     );
 
-    // Initial check for querySnapshot.docs
-    if (!querySnapshot || !querySnapshot.docs) {
-      throw new Error("No documents found");
-    }
-
-    // Return the templates array
-    return querySnapshot.docs.map((doc) => doc.data());
+    // Return unsubscribe function for cleanup
+    return () => unsubscribe();
   });
 };
 
