@@ -1,23 +1,33 @@
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../config/firebase.config";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 
-const useTemplates = (fetchFunction) => {
-  const { data, isLoading, isError, refetch } = useQuery(
-    "templates",
-    async () => {
-      try {
-        const templates = await fetchFunction(); // Call the provided fetch function
+const useTemplates = () => {
+  return useQuery("templates", async () => {
+    const templateRef = collection(db, "templates");
+
+    // Create a query with orderBy for 'timestamp'
+    const querySnapshot = await onSnapshot(
+      query(templateRef, orderBy("timestamp", "asc")),
+      (querySnapshot) => {
+        const templates = querySnapshot.docs.map((doc) => doc.data());
+        // Resolve the templates array
         return templates;
-      } catch (err) {
-        console.error(err); // Log the error for debugging purposes
-        toast.error("Something went wrong"); // Show a user-friendly error message
-        throw new Error("Failed to fetch templates"); // Rethrow the error for React Query to handle
+      },
+      (error) => {
+        // Handle any error that occurs during onSnapshot
+        throw error;
       }
-    },
-    { refetchOnWindowFocus: false } // Configure options for the query
-  );
+    );
 
-  return { data, isLoading, isError, refetch }; // Return the data and state variables as an object
+    // Initial check for querySnapshot.docs
+    if (!querySnapshot || !querySnapshot.docs) {
+      throw new Error("No documents found");
+    }
+
+    // Return the templates array
+    return querySnapshot.docs.map((doc) => doc.data());
+  });
 };
 
 export default useTemplates;

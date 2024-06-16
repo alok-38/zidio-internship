@@ -10,8 +10,9 @@ import {
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
-import { serverTimestamp } from "firebase/firestore";
-import useTemplates from "../hooks/useTemplates"; // Correct import path
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import useTemplates from "../hooks/useTemplates"; // Import your custom hook
+import { db } from "../config/firebase.config";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -30,32 +31,13 @@ const CreateTemplate = () => {
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
-  // Example fetch function for templates
-  const fetchTemplates = async () => {
-    try {
-      const response = await fetch("/api/templates");
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const data = await response.json();
-        return data;
-      } else {
-        throw new Error("Received non-JSON response");
-      }
-    } catch (error) {
-      console.error("Error fetching templates:", error);
-      throw error;
-    }
-  };
-
+  // Custom hook for fetching templates using React Query
   const {
-    data: templates,
-    isError: templatesError,
+    templates,
     isLoading: templatesLoading,
+    error: templatesError,
     refetch: refetchTemplates,
-  } = useTemplates(fetchTemplates); // Using the useTemplates hook with fetchTemplates function
+  } = useTemplates();
 
   // Handling the input field change
   const handleInputChange = (e) => {
@@ -165,13 +147,20 @@ const CreateTemplate = () => {
       name:
         templates && templates.length > 0
           ? `Template${templates.length + 1}`
-          : "Templates1",
+          : "Template1",
       timestamp: timestamp,
     };
-
-    // Placeholder function to save to cloud
-    // Implement your logic to save the document to Firebase or other backend
-    console.log("Saving document:", _doc);
+    try {
+      await setDoc(doc(db, "templates", id), _doc);
+      setFormData({ title: "", imageURL: null });
+      setImageAsset({ isImageLoading: false, uri: null, progress: 0 });
+      setSelectedTags([]);
+      refetchTemplates(); // Trigger refetch of templates after successful save
+      toast.success("Template saved successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      toast.error("Error saving template. Please try again.");
+    }
   };
 
   return (
@@ -188,7 +177,7 @@ const CreateTemplate = () => {
           </p>
           <p className="text-sm text-txtDark capitalize font-bold">
             {templates && templates.length > 0
-              ? `Templates${templates.length + 1}`
+              ? `Template${templates.length + 1}`
               : "Template1"}
           </p>
         </div>
