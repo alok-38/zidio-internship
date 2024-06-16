@@ -33,9 +33,9 @@ const Header = () => {
         ) : (
           <React.Fragment>
             {data ? (
-              <motion.div>
-                {data?.photoURLs ? (
-                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center">
+              <motion.div className="relative">
+                {data?.photoURL ? (
+                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center cursor-pointer">
                     <img
                       src={data?.photoURL}
                       referrerPolicy="no-referrer"
@@ -44,8 +44,40 @@ const Header = () => {
                     />
                   </div>
                 ) : (
-                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center bg-orange-500 shadow-md"></div>
+                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center bg-orange-500 shadow-md cursor-pointer">
+                    <p className="text-lg text-white">{data?.displayName[0]}</p>
+                  </div>
                 )}
+
+                {/* dropdown menu */}
+                <AnimatePresence>
+                  <motion.div
+                    className="absolute px-4 py-3 rounded-md  bg-orange-50 right-0
+                top-14 flex flex-col items-center justify-start gap-3 w-64 pt-12"
+                  >
+                    {data?.photoURL ? (
+                      <div className="w-20 h-20 rounded-full relative flex flex-col items-center justify-center cursor-pointer">
+                        <img
+                          src={data?.photoURL}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover rounded-full"
+                          alt=""
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-full relative flex items-center justify-center bg-orange-500 shadow-md cursor-pointer">
+                        <p className="text-lg text-white">
+                          {data?.displayName[0]}
+                        </p>
+                      </div>
+                    )}
+                    {data?.displayName && (
+                      <p className="text-lg text-white">
+                        {data?.displayName[0]}
+                      </p>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </motion.div>
             ) : (
               <Link to={"/auth"}>
