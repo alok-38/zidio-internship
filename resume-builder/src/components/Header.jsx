@@ -8,6 +8,7 @@ import { HiLogout } from "react-icons/hi";
 import { FadeInOutWIthOpacity, slideUpDownMenu } from "../animations";
 import { auth } from "../config/firebase.config";
 import { useQueryClient } from "react-query";
+import { adminIds } from "../utils/helpers";
 
 const Header = () => {
   const { data, isLoading, isError } = useUser();
@@ -104,12 +105,14 @@ const Header = () => {
                         >
                           My Account
                         </Link>
-                        <Link
-                          className="text-txtLight hover:text-orange-600 text-base whitespace-nowrap"
-                          to={"/template/create"}
-                        >
-                          Add New Template
-                        </Link>
+                        {adminIds.includes(data?.uid) && (
+                          <Link
+                            className="text-txtLight hover:text-orange-600 text-base whitespace-nowrap"
+                            to={"/template/create"}
+                          >
+                            Add New Template
+                          </Link>
+                        )}
                         <div
                           className="w-full px-2 py-2 border-t border-orange-300 flex items-center justify-between cursor-pointer"
                           onClick={signOutUser}
@@ -129,7 +132,8 @@ const Header = () => {
                 <motion.button
                   {...FadeInOutWIthOpacity}
                   className=" px-4 py-2 rounded-md border border-orange-400 hover:bg-orange-400 hover:text-white
-                  hover:shadow-md active:scale-95 duration-150" type="button"
+                  hover:shadow-md active:scale-95 duration-150"
+                  type="button"
                 >
                   Login
                 </motion.button>
