@@ -111,23 +111,25 @@ const CreateTemplate = () => {
               <p>{imageAsset.progress.toFixed(2)}%</p>
             </div>
           ) : (
-            <label className="w-full cursor-pointer h-full">
-              <div className="flex items-center justify-center h-full w-full">
-                <div
-                  className={`flex items-center justify-center cursor-pointer flex-col ${
-                    isHovered ? "text-orange-600" : "text-gray-600"
-                  }`}
-                >
-                  <FaUpload className="text-5xl" />
+            <React.Fragment>
+              <label className="w-full cursor-pointer h-full">
+                <div className="flex items-center justify-center h-full w-full">
+                  <div
+                    className={`flex items-center justify-center cursor-pointer flex-col ${
+                      isHovered ? "text-orange-600" : "text-gray-600"
+                    }`}
+                  >
+                    <FaUpload className="text-5xl" />
+                  </div>
                 </div>
-              </div>
-              <input
-                type="file"
-                className="w-0 h-0"
-                accept=".jpeg, .jpg, .png"
-                onChange={handleFileSelect}
-              />
-            </label>
+                <input
+                  type="file"
+                  className="w-0 h-0"
+                  accept=".jpeg, .jpg, .png"
+                  onChange={handleFileSelect}
+                />
+              </label>
+            </React.Fragment>
           )}
         </div>
       </div>
