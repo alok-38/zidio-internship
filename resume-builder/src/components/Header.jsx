@@ -34,9 +34,18 @@ const Header = () => {
           <React.Fragment>
             {data ? (
               <motion.div>
-                {data?.photoURL ? <div className="w-12 h-12 rounded-md relative flex items-center justify-center">
-                  <img src={data?.photoURL} referrerPolicy="no-referrer" className="w-full h-full object-cover rounded-md" alt="" />
-                </div> : <div></div>}
+                {data?.photoURLs ? (
+                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center">
+                    <img
+                      src={data?.photoURL}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover rounded-md"
+                      alt=""
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-md relative flex items-center justify-center bg-orange-500 shadow-md"></div>
+                )}
               </motion.div>
             ) : (
               <Link to={"/auth"}>
