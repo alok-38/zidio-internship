@@ -34,7 +34,11 @@ const CreateTemplate = () => {
         </div>
         {/* template title section */}
         <input
+          className="w-full px-4 py-3 rounded-md bg-transparent
+        border-orange-200 text-lg text-txtPrimary focus:text-txtDark
+        focus:shadow-md outline-none focus:border-orange-600 border-2"
           type="text"
+          name="title"
           placeholder="Template Title"
           value={formData.title}
           onChange={handleInputChange}
