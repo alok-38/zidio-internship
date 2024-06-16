@@ -23,7 +23,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full flex items-center justify-between px-4 py-3 lg:px-8 border-b border-orange-300 bg-orange-50 z-50 gap-12 sticky top-0">
+    <header className="w-full flex items-center justify-between px-4 py-3 lg:px-8 border-b border-orange-300 bg-gray-200 z-50 gap-12 sticky top-0">
       {/* logo */}
       <Link to="/">
         <img
@@ -33,11 +33,12 @@ const Header = () => {
         />
       </Link>
       {/* input */}
-      <div className="flex-1 px-4 py-1 rounded-md flex items-center justify-between border-2 focus-within:border-orange-500">
+      <div className="flex-1 px-4 py-1 rounded-md flex items-center justify-between border-2 focus-within:border-orange-500
+      hover:border-orange-600">
         <input
           type="text"
           placeholder="Search here..."
-          className="flex border border-gray-300 px-4 py-1 rounded-md flex-1 items-center justify-between bg-orange-50 border-none outline-none h-10 focus:outline-none font-semibold"
+          className="flex border px-4 py-1 rounded-md flex-1 items-center justify-between bg-gray-200 border-none outline-none h-10 focus:outline-none font-semibold cursor-pointer"
         />
       </div>
       {/* profile */}

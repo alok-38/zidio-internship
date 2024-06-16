@@ -36,13 +36,18 @@ const CreateTemplate = () => {
         <input
           className="w-full px-4 py-3 rounded-md bg-transparent
         border-orange-200 text-lg text-txtPrimary focus:text-txtDark
-        focus:shadow-md outline-none focus:border-orange-600 border-2"
+        focus:shadow-md focus:font-semibold outline-none focus:border-orange-600 border-2"
           type="text"
           name="title"
           placeholder="Template Title"
           value={formData.title}
           onChange={handleInputChange}
         />
+        {/* file uploader section */}
+        <div
+          className="w-full bg-gray-200 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md border-2 border-orange-30 cursor-pointer flex items-center justify-center
+    hover:bg-orange-100 hover:shadow-lg transition duration-300 ease-in-out"
+        ></div>
       </div>
 
       {/* right container */}
