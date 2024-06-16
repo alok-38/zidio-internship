@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { PuffLoader } from "react-spinners";
 import { FaUpload } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../config/firebase.config";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -17,16 +20,67 @@ const CreateTemplate = () => {
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
-  // handling the input field change
+  // Handling the input field change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevRec) => ({ ...prevRec, [name]: value }));
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  // handle the image file changes
+  // Handle the image file changes
   const handleFileSelect = async (e) => {
+    setImageAsset({ isImageLoading: true, uri: null, progress: 0 });
     const file = e.target.files[0];
-    console.log(file);
+    if (file && isAllowed(file)) {
+      const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setImageAsset((prevAsset) => ({ ...prevAsset, progress }));
+        },
+        (error) => {
+          if (error.message.includes("storage/unauthorized")) {
+            toast.error(`Error: Authorization Revoked`);
+          } else {
+            toast.error(`Error: ${error.message}`);
+          }
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            isImageLoading: false,
+          }));
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              setImageAsset((prevAsset) => ({
+                ...prevAsset,
+                uri: downloadURL,
+              }));
+              toast.success("Image uploaded");
+            })
+            .catch((error) => {
+              toast.error(`Error: ${error.message}`);
+            })
+            .finally(() => {
+              setTimeout(() => {
+                setImageAsset((prevAsset) => ({
+                  ...prevAsset,
+                  isImageLoading: false,
+                }));
+              }, 2000);
+            });
+        }
+      );
+    } else {
+      toast.info("Invalid file format");
+    }
+  };
+
+  const isAllowed = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
   };
 
   return (
@@ -63,30 +117,34 @@ const CreateTemplate = () => {
           {imageAsset.isImageLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
               <PuffLoader color="orange" size={40} />
-              <p>{imageAsset?.progress.toFixed(2)}%</p>
+              <p>{imageAsset.progress.toFixed(2)}%</p>
             </div>
+          ) : imageAsset.uri ? (
+            <img
+              src={imageAsset.uri}
+              alt="Uploaded"
+              className="max-h-full max-w-full"
+            />
           ) : (
-            !imageAsset?.uri && (
-              <label className="w-full cursor-pointer h-full">
-                <div className="flex flex-col items-center justify-center h-full w-full">
-                  <div className="flex items-center justify-center cursor-pointer flex-col">
-                    <FaUpload
-                      className={`text-5xl ${
-                        isUploadContainerHovered
-                          ? "text-orange-600"
-                          : "text-gray-400"
-                      }`}
-                    />
-                  </div>
+            <label className="w-full cursor-pointer h-full">
+              <div className="flex flex-col items-center justify-center h-full w-full">
+                <div className="flex items-center justify-center cursor-pointer flex-col">
+                  <FaUpload
+                    className={`text-5xl ${
+                      isUploadContainerHovered
+                        ? "text-orange-600"
+                        : "text-gray-400"
+                    }`}
+                  />
                 </div>
-                <input
-                  type="file"
-                  className="w-0 h-0"
-                  accept=".jpeg,.jpg,.png"
-                  onChange={handleFileSelect}
-                />
-              </label>
-            )
+              </div>
+              <input
+                type="file"
+                className="w-0 h-0"
+                accept=".jpeg,.jpg,.png"
+                onChange={handleFileSelect}
+              />
+            </label>
           )}
         </div>
       </div>
