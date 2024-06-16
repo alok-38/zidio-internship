@@ -23,6 +23,8 @@ const CreateTemplate = () => {
     progress: 0,
   });
 
+  const [selectedTags, setSelectedTags] = useState([]);
+
   const [isUploadContainerHovered, setIsUploadContainerHovered] =
     useState(false);
 
@@ -113,6 +115,13 @@ const CreateTemplate = () => {
   const isAllowed = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     return allowedTypes.includes(file.type);
+  };
+
+  const handleSelectedTags = (tag) => {
+    // check if the tag is selected
+    if (selectedTags.includes) {
+      setSelectedTags(selectedTags.filter((selected) => selected !== tag));
+    }
   };
 
   return (
