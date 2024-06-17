@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUpload, FaTrash } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { useQuery, useQueryClient } from "react-query"; // Import useQuery and useQueryClient from react-query
+import { useQuery, useQueryClient } from "react-query";
 import {
   getDownloadURL,
   ref,
@@ -16,7 +16,6 @@ import { doc } from "firebase/firestore";
 import { initialTags } from "../utils/helpers";
 
 const fetchTemplates = async () => {
-  // Simulate API fetch (replace with actual fetch from your API)
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated delay
   return [
     {
@@ -37,7 +36,7 @@ const fetchTemplates = async () => {
 };
 
 const useTemplates = () => {
-  return useQuery("templates", fetchTemplates); // useQuery hook to fetch templates data
+  return useQuery("templates", fetchTemplates);
 };
 
 const CreateTemplate = () => {
@@ -84,35 +83,43 @@ const CreateTemplate = () => {
           }));
         },
         (error) => {
-          if (error.code === "storage/unauthorized") {
-            toast.error(`Error: Authorization revoked`);
-          } else {
-            toast.error(`Error: ${error.message}`);
-          }
-          setImageAsset((prevAsset) => ({
-            ...prevAsset,
-            isImageLoading: false,
-          }));
+          handleUploadError(error);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageAsset((prevAsset) => ({
-              ...prevAsset,
-              uri: downloadURL,
-            }));
-          });
-          toast.success("Image uploaded");
-          setTimeout(() => {
-            setImageAsset((prevAsset) => ({
-              ...prevAsset,
-              isImageLoading: false,
-            }));
-          }, 2000);
+          handleUploadSuccess(uploadTask);
         }
       );
     } else {
       toast.info("Invalid file format.");
     }
+  };
+
+  const handleUploadError = (error) => {
+    if (error.code === "storage/unauthorized") {
+      toast.error(`Error: Authorization revoked`);
+    } else {
+      toast.error(`Error: ${error.message}`);
+    }
+    setImageAsset((prevAsset) => ({
+      ...prevAsset,
+      isImageLoading: false,
+    }));
+  };
+
+  const handleUploadSuccess = (uploadTask) => {
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      setImageAsset((prevAsset) => ({
+        ...prevAsset,
+        uri: downloadURL,
+      }));
+    });
+    toast.success("Image uploaded");
+    setTimeout(() => {
+      setImageAsset((prevAsset) => ({
+        ...prevAsset,
+        isImageLoading: false,
+      }));
+    }, 2000);
   };
 
   const deleteAnImageObject = async () => {
@@ -175,7 +182,7 @@ const CreateTemplate = () => {
         setFormData((prevData) => ({ ...prevData, title: "", imageURL: "" }));
         setImageAsset((prevAsset) => ({ ...prevAsset, uri: null }));
         setSelectedTags([]);
-        queryClient.invalidateQueries("templates"); // Invalidate templates query to refetch
+        queryClient.invalidateQueries("templates");
         toast.success("Data pushed to the cloud");
       })
       .catch((error) => {
@@ -189,16 +196,13 @@ const CreateTemplate = () => {
 
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
-      {/* Left container */}
       <div className="col-span-12 lg:col-span-4 2xl:col-span-3 w-full flex-1 flex items-center justify-start flex-col gap-4 px-2">
         <div className="w-full">
           <p className="text-lg text-txtPrimary">Create a new Template</p>
         </div>
 
-        {/* Template title section */}
         <input
-          className="w-full px-4 py-3 rounded-md bg-transparent border border-gray-300 text-lg text-txtPrimary focus:border-2 focus:text-txtDark focus:outline-none focus:border-orange-600 focus:ring-blue-500
-            hover:border-orange-500 hover:text-gray-700 transition duration-200 cursor-pointer"
+          className="w-full px-4 py-3 rounded-md bg-transparent border border-gray-300 text-lg text-txtPrimary focus:border-2 focus:text-txtDark focus:outline-none focus:border-orange-600 focus:ring-blue-500 hover:border-orange-500 hover:text-gray-700 transition duration-200 cursor-pointer"
           type="text"
           name="title"
           placeholder="Template Title"
@@ -206,12 +210,11 @@ const CreateTemplate = () => {
           onChange={handleInputChange}
         />
 
-        {/* File uploader section */}
         <div
           tabIndex={0}
-          className={`relative w-full bg-gray-200 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md cursor-pointer flex items-center justify-center border-2 border-gray-300
-            ${isHovered || isFocused ? "border-orange-500" : ""}
-            focus:outline-none`}
+          className={`relative w-full bg-gray-200 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md cursor-pointer flex items-center justify-center border-2 border-gray-300 ${
+            isHovered || isFocused ? "border-orange-500" : ""
+          } focus:outline-none`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsFocused(true)}
@@ -241,34 +244,31 @@ const CreateTemplate = () => {
               />
             </label>
           ) : (
-            <div className="relative w-full h-full overflow-hidden rounded-md">
-              <img
-                src={imageAsset.uri}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                alt=""
-              />
-              {/* delete actions */}
-              <div
-                onClick={deleteAnImageObject}
-                className={`absolute top-4 right-4 w-8 h-8 rounded-md flex items-center
-                  justify-center cursor-pointer
-                  ${
+            <React.Fragment>
+              <div className="relative w-full h-full overflow-hidden rounded-md">
+                <img
+                  src={imageAsset.uri}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  alt=""
+                />
+                <div
+                  onClick={deleteAnImageObject}
+                  className={`absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center cursor-pointer ${
                     isTrashHovered
                       ? "bg-red-600"
                       : "bg-gray-600 hover:bg-red-600"
-                  }
-                `}
-                onMouseEnter={() => setIsTrashHovered(true)}
-                onMouseLeave={() => setIsTrashHovered(false)}
-              >
-                <FaTrash className="text-white text-sm hover:text-lg" />
+                  }`}
+                  onMouseEnter={() => setIsTrashHovered(true)}
+                  onMouseLeave={() => setIsTrashHovered(false)}
+                >
+                  <FaTrash className="text-white text-sm hover:text-lg" />
+                </div>
               </div>
-            </div>
+            </React.Fragment>
           )}
         </div>
 
-        {/* Tags section */}
         <div className="w-full flex items-center flex-wrap gap-2 mt-4">
           {initialTags.map((tag, index) => (
             <div
@@ -283,7 +283,6 @@ const CreateTemplate = () => {
           ))}
         </div>
 
-        {/* Save button */}
         <button
           onClick={pushToCloud}
           type="button"
@@ -306,37 +305,39 @@ const CreateTemplate = () => {
         </button>
       </div>
 
-      {/* Right container */}
-      <div className="col-span-12 lg:col-span-8 2xl:col-span-9">
-        {/* Display fetched templates */}
-        <div>
-          {templatesIsLoading && <p>Loading...</p>}
-          {templatesIsError && <p>Error fetching templates.</p>}
-          {templates && (
-            <ul>
-              {templates.map((template) => (
-                <li key={template._id}>
-                  <p>{template.title}</p>
-                  <img
-                    src={template.imageURL}
-                    alt="Template"
-                    className="h-24 w-auto"
-                  />
-                  <div className="flex gap-2">
-                    {template.tags.map((tag, index) => (
-                      <div
-                        key={index}
-                        className="border border-orange-300 px-2 py-1 rounded-md"
-                      >
-                        <p className="text-xs">{tag}</p>
-                      </div>
-                    ))}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      <div className="col-span-12 lg:col-span-8 2xl:col-span-9 px-2 w-full flex-1 py-4">
+        {templatesIsLoading ? (
+          <React.Fragment>
+            <div className="w-full h-full flex items-center justify-center">
+              <PuffLoader color="orange" size={40} />
+            </div>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            {templates && templates.length > 0 ? (
+              <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-4">
+                {templates.map((template) => (
+                  <React.Fragment key={template._id}>
+                    <div className="w-full h-[500px] rounded-md overflow-hidden relative">
+                      <img
+                        src={template.imageURL}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <PuffLoader color="orange" size={40} />
+                <p className="text-xl tracking-wider capitalize text-txtPrimary">
+                  No data
+                </p>
+              </div>
+            )}
+          </React.Fragment>
+        )}
       </div>
     </div>
   );
