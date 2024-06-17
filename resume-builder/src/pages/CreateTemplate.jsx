@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUpload, FaTrash } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
@@ -10,8 +10,11 @@ import {
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
+import { serverTimestamp } from "firebase/firestore";
+import { useTemplates } from "../hooks/useTemplates";
 
 const CreateTemplate = () => {
+
   const [formData, setFormData] = useState({
     title: "",
     imageURL: null,
@@ -24,6 +27,13 @@ const CreateTemplate = () => {
   });
 
   const [selectedTags, setSelectedTags] = useState([]);
+
+  const {
+    data: templates,
+    isError: templatesIsError,
+    isLoading: templatesIsLoading,
+    refetch: templatesRefetch,
+  } = useTemplates();
 
   const [isTrashHovered, setIsTrashHovered] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -126,6 +136,27 @@ const CreateTemplate = () => {
     }
   };
 
+  const pushToCloud = async () => {
+    const timeStamp = serverTimestamp();
+    const id = `${Date.now()}`;
+    const nextTemplateName =
+      templates && templates.length > 0
+        ? `Template${templates.length + 1}`
+        : "Template1";
+
+    const _doc = {
+      _id: id,
+      title: formData.title,
+      imageURL: imageAsset.uri,
+      tags: selectedTags,
+      name: nextTemplateName,
+      timeStamp: timeStamp,
+    };
+
+    // Here you might want to save _doc to your database or perform further actions
+    console.log(_doc);
+  };
+
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
       {/* left container */}
@@ -221,6 +252,27 @@ const CreateTemplate = () => {
             </div>
           ))}
         </div>
+        {/* button action */}
+        <button
+          onClick={pushToCloud}
+          type="button"
+          className="w-full bg-orange-700 text-white rounded-md py-3 hover:bg-orange-500 transition duration-200 ease-in-out shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+          style={{
+            transition: "transform 0.1s ease",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = "scale(0.95)";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          Save
+        </button>
       </div>
 
       {/* right container */}
