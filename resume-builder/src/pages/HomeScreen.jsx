@@ -1,27 +1,33 @@
 import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
-import { Header, MainSpinner } from "../components";
-import { HomeContainer } from "../containers";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import { Header } from "../components";
 import {
-  CreateTemplate,
-  UserProfile,
   CreateResume,
-  TemplateDesignPinDetails,
+  CreateTemplate,
+  HomeTemplates,
+  UserProfile,
 } from "../pages";
+import useUser from "../hooks/useUser";
+import { PuffLoader } from "react-spinners";
+import { MainSpinner, TemplateDesignPinDetails } from "../components";
+import { TemplatesData } from "../utils/helpers";
 
-const HomeScreen = () => {
+const Home = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center">
+      {/* header */}
       <Header />
+      {/* main container */}
       <main className="w-full">
         <Suspense fallback={<MainSpinner />}>
           <Routes>
-            <Route path="/" element={<HomeContainer />} />
+            <Route path="/" element={<HomeTemplates />} />
             <Route path="/template/create" element={<CreateTemplate />} />
             <Route path="/profile/:uid" element={<UserProfile />} />
+
             <Route path="/resume/*" element={<CreateResume />} />
             <Route
-              path="/resumeDetail/:templateID"
+              path="/resumeDetail/:templateId"
               element={<TemplateDesignPinDetails />}
             />
           </Routes>
@@ -31,4 +37,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default Home;

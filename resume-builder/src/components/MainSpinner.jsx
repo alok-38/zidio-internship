@@ -4,7 +4,7 @@ import { PuffLoader } from "react-spinners";
 const MainSpinner = () => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
-      <PuffLoader color="#498fcd" size={80} />
+      <PuffLoader color="orange" size={80} />
     </div>
   );
 };

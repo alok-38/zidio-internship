@@ -1,3 +1,4 @@
+import { auth, db } from "../config/firebase.config";
 import {
   collection,
   doc,
@@ -6,57 +7,89 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
-import { auth, db } from "../config/firebase.config";
 
 export const getUserDetail = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = auth.onAuthStateChanged((userCred) => {
       if (userCred) {
+        // User is authenticated; resolve the Promise with user data
         const userData = userCred.providerData[0];
-        const unsubscribeSnapshot = onSnapshot(
+
+        const unsubscribe = onSnapshot(
           doc(db, "users", userData?.uid),
           (_doc) => {
             if (_doc.exists()) {
-              // Corrected method name from exist() to exists()
               resolve(_doc.data());
             } else {
-              setDoc(doc(db, "users", userData?.uid), userData)
-                .then(() => {
-                  resolve(userData);
-                })
-                .catch((error) => {
-                  reject(error);
-                });
+              setDoc(doc(db, "users", userData?.uid), userData).then(() => {
+                resolve(userData);
+              });
             }
-          },
-          (error) => {
-            reject(error);
           }
         );
-        // Return the unsubscribe function for cleanup
-        return () => {
-          unsubscribeSnapshot();
-        };
+
+        return unsubscribe;
       } else {
+        // User is not authenticated; reject the Promise with an error
         reject(new Error("User is not authenticated"));
       }
-      // Unsubscribe from the auth state listener (to prevent memory leaks)
+      // Make sure to unsubscribe from the listener to prevent memory leaks
       unsubscribe();
     });
   });
 };
 
-export const useTemplates = () => {
+export const getTemplates = () => {
   return new Promise((resolve, reject) => {
     const templateQuery = query(
       collection(db, "templates"),
-      orderBy("timestamp", "asc")
+      orderBy("timeStamp", "asc")
     );
+
     const unsubscribe = onSnapshot(templateQuery, (querySnap) => {
       const templates = querySnap.docs.map((doc) => doc.data());
       resolve(templates);
     });
 
+    return unsubscribe; // Clean up the listener when unsubscribed
+  });
+};
+
+export const getTemplateDetail = (id) => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onSnapshot(doc(db, "templates", id), (doc) => {
+      resolve(doc.data());
+    });
+
     return unsubscribe;
+  });
+};
+
+export const getTemplateDetailEditByUser = (uid, id) => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onSnapshot(
+      doc(db, "users", uid, "resumes", id),
+      (doc) => {
+        resolve(doc.data());
+      }
+    );
+
+    return unsubscribe;
+  });
+};
+
+export const getSavedResumes = (uid) => {
+  return new Promise((resolve, reject) => {
+    const templateQuery = query(
+      collection(db, "users", uid, "resumes"),
+      orderBy("timeStamp", "asc")
+    );
+
+    const unsubscribe = onSnapshot(templateQuery, (querySnap) => {
+      const templates = querySnap.docs.map((doc) => doc.data());
+      resolve(templates);
+    });
+
+    return unsubscribe; // Clean up the listener when unsubscribed
   });
 };

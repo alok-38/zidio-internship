@@ -1,33 +1,27 @@
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../config/firebase.config";
 import { useQuery } from "react-query";
+import { getTemplates } from "../api";
+import { toast } from "react-toastify";
 
-export function useTemplates() {
+const useTemplates = () => {
   const { data, isLoading, isError, refetch } = useQuery(
     "templates",
     async () => {
-      const templateRef = collection(db, "templates");
-
-      const unsubscribe = onSnapshot(
-        templateRef,
-        (querySnapshot) => {
-          const templates = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          // Resolve the templates array
-          return templates;
-        },
-        (error) => {
-          // Handle any error that occurs during onSnapshot
-          throw error;
-        }
-      );
-
-      // Return unsubscribe function for cleanup
-      return () => unsubscribe();
-    }
+      try {
+        const templates = await getTemplates();
+        return templates;
+      } catch (error) {
+        console.log(error.message);
+        toast.error("Something went wrong...");
+      }
+    },
+    { refetchOnWindowFocus: false }
   );
+  return {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  };
+};
 
-  return { data, isLoading, isError, refetch };
-}
+export default useTemplates;

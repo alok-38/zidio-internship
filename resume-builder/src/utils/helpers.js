@@ -1,28 +1,8 @@
-
-export const adminIds = ["101057016679337500646", "121376211"];
-
-export const initialTags = [
-  "Software Engineer",
-  "Front-end Developer",
-  "Back-end Developer",
-  "Full-stack Developer",
-  "Web Developer",
-  "UI/UX Designer",
-  "Graphic Designer",
-  "Data Scientist",
-  "Product Manager",
-  "Project Manager",
-  "Business Analyst",
-  "Marketing Manager",
-  "Sales Representative",
-  "Customer Service Representative",
-  "HR Manager",
-  "Financial Analyst",
-  "Content Writer",
-  "Teacher/Educator",
-  "Healthcare Professional",
-  "Legal Counsel",
-];
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import Template1 from "../designs/Template1"; // Adjust path as necessary
+import Template2 from "../designs/Template2"; // Adjust path as necessary
+import { toast } from "react-toastify";
+import { db } from "../config/firebase.config";
 
 export const FiltersData = [
   { id: "1", label: "Software Engineer", value: "Software Engineer" },
@@ -55,3 +35,88 @@ export const FiltersData = [
   { id: "20", label: "Legal Counsel", value: "legal_counsel" },
 ];
 
+export const TemplatesData = [
+  { id: `template1-${Date.now()}`, name: "Template1", component: Template1 },
+  { id: `template2-${Date.now()}`, name: "Template2", component: Template2 },
+];
+
+export const adminIds = ["101057016679337500646", "121376211"];
+
+export const initialTags = [
+  "Software Engineer",
+  "Front-end Developer",
+  "Back-end Developer",
+  "Full-stack Developer",
+  "Web Developer",
+  "UI/UX Designer",
+  "Graphic Designer",
+  "Data Scientist",
+  "Product Manager",
+  "Project Manager",
+  "Business Analyst",
+  "Marketing Manager",
+  "Sales Representative",
+  "Customer Service Representative",
+  "HR Manager",
+  "Financial Analyst",
+  "Content Writer",
+  "Teacher/Educator",
+  "Healthcare Professional",
+  "Legal Counsel",
+];
+
+export const saveToCollections = async (user, data, fetch) => {
+  if (!user?.collections?.includes(data?._id)) {
+    const docRef = doc(db, "users", user?.uid);
+
+    await updateDoc(docRef, {
+      collections: arrayUnion(data?._id),
+    })
+      .then(() => {
+        toast.success("Added to collections successfully");
+      })
+      .catch((error) => {
+        toast.error("Something Went Wrong Try again later..");
+      });
+  } else {
+    const docRef = doc(db, "users", user?.uid);
+
+    await updateDoc(docRef, {
+      collections: arrayRemove(data?._id),
+    })
+      .then(() => {
+        toast.success("Removed from collections successfully");
+      })
+      .catch((error) => {
+        toast.error("Something Went Wrong Try again later..");
+      });
+  }
+};
+
+export const saveToFavourites = async (user, data) => {
+  if (!data?.favourites?.includes(user?.uid)) {
+    const docRef = doc(db, "templates", data?._id);
+
+    await updateDoc(docRef, {
+      favourites: arrayUnion(user?.uid),
+    })
+      .then(() => {
+        toast.success("Added to favorites successfully");
+      })
+      .catch((error) => {
+        toast.error("Something Went Wrong Try again later..");
+      });
+  } else {
+    const docRef = doc(db, "templates", data?._id);
+
+    await updateDoc(docRef, {
+      favourites: arrayRemove(user?.uid),
+    })
+      .then(() => {
+        toast.success("Removed from favorites successfully");
+      })
+      .catch((error) => {
+        toast.error("Something Went Wrong Try again later..");
+      });
+  }
+};
