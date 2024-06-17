@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaTrash } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "../config/firebase.config";
 
 const CreateTemplate = () => {
@@ -17,6 +22,7 @@ const CreateTemplate = () => {
     progress: 0,
   });
 
+  const [isTrashHovered, setIsTrashHovered] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -37,17 +43,23 @@ const CreateTemplate = () => {
       uploadTask.on(
         "state_changed",
         (snapShot) => {
+          const progress =
+            (snapShot.bytesTransferred / snapShot.totalBytes) * 100;
           setImageAsset((prevAsset) => ({
             ...prevAsset,
-            progress: (snapShot.bytesTransferred / snapShot.totalBytes) * 100,
+            progress,
           }));
         },
         (error) => {
-          if (error.message.includes("Storage/unauthorized")) {
+          if (error.code === "storage/unauthorized") {
             toast.error(`Error: Authorization revoked`);
           } else {
             toast.error(`Error: ${error.message}`);
           }
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            isImageLoading: false,
+          }));
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -68,6 +80,32 @@ const CreateTemplate = () => {
     } else {
       toast.info("Invalid file format.");
     }
+  };
+
+  // action to delete an image from the cloud
+  const deleteAnImageObject = async () => {
+    if (!imageAsset.uri) return;
+
+    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
+    const deleteRef = ref(storage, imageAsset.uri);
+
+    deleteObject(deleteRef)
+      .then(() => {
+        toast.success("Image removed");
+        setImageAsset((prevAsset) => ({
+          ...prevAsset,
+          progress: 0,
+          uri: null,
+          isImageLoading: false,
+        }));
+      })
+      .catch((error) => {
+        toast.error(`Error deleting image: ${error.message}`);
+        setImageAsset((prevAsset) => ({
+          ...prevAsset,
+          isImageLoading: false,
+        }));
+      });
   };
 
   const isAllowed = (file) => {
@@ -106,45 +144,53 @@ const CreateTemplate = () => {
           onBlur={() => setIsFocused(false)}
         >
           {imageAsset.isImageLoading ? (
-            <React.Fragment>
-              <div className="flex flex-col items-center justify-center gap-4">
-                <PuffLoader color="orange" size={40} />
-                <p>{imageAsset.progress.toFixed(2)}%</p>
-              </div>
-            </React.Fragment>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <PuffLoader color="orange" size={40} />
+              <p>{imageAsset.progress.toFixed(2)}%</p>
+            </div>
           ) : !imageAsset.uri ? (
-            <React.Fragment>
-              <label className="w-full cursor-pointer h-full">
-                <div className="flex items-center justify-center h-full w-full">
-                  <div
-                    className={`flex items-center justify-center cursor-pointer text-5xl transition duration-200 ${
-                      isHovered || isFocused
-                        ? "text-orange-500"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    <FaUpload />
-                  </div>
+            <label className="w-full cursor-pointer h-full">
+              <div className="flex items-center justify-center h-full w-full">
+                <div
+                  className={`flex items-center justify-center cursor-pointer text-5xl transition duration-200 ${
+                    isHovered || isFocused ? "text-orange-500" : "text-gray-400"
+                  }`}
+                >
+                  <FaUpload />
                 </div>
-                <input
-                  type="file"
-                  className="w-0 h-0"
-                  accept=".jpeg,.jpg,.png"
-                  onChange={handleFileSelect}
-                />
-              </label>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <div className="relative w-full h-full overflow-hidden rounded-md">
-                <img
-                  src={imageAsset.uri}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  alt=""
-                />
               </div>
-            </React.Fragment>
+              <input
+                type="file"
+                className="w-0 h-0"
+                accept=".jpeg,.jpg,.png"
+                onChange={handleFileSelect}
+              />
+            </label>
+          ) : (
+            <div className="relative w-full h-full overflow-hidden rounded-md">
+              <img
+                src={imageAsset.uri}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                alt=""
+              />
+              {/* delete actions */}
+              <div
+                onClick={deleteAnImageObject}
+                className={`absolute top-4 right-4 w-8 h-8 rounded-md flex items-center
+                  justify-center cursor-pointer
+                  ${
+                    isTrashHovered
+                      ? "bg-red-600"
+                      : "bg-gray-600 hover:bg-red-600"
+                  }
+                `}
+                onMouseEnter={() => setIsTrashHovered(true)}
+                onMouseLeave={() => setIsTrashHovered(false)}
+              >
+                <FaTrash className="text-white text-sm hover:text-lg" />
+              </div>
+            </div>
           )}
         </div>
       </div>
