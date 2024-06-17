@@ -12,9 +12,9 @@ module.exports = {
   },
   variants: {
     extend: {
-      borderColor: ["hover", "focus"],
-      scale: ["hover"],
-      ringColor: ["focus"],
+      borderColor: ["hover", "focus"],  // Enables hover and focus variants for borderColor
+      scale: ["hover"],                 // Enables hover variant for scale
+      ringColor: ["focus"],             // Enables focus variant for ringColor
     },
   },
   plugins: [],

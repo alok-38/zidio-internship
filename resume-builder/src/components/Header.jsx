@@ -72,7 +72,7 @@ const Header = () => {
                   {isMenu && (
                     <motion.div
                       {...slideUpDownMenu}
-                      className="absolute px-4 py-3 rounded-md  bg-orange-50 right-0
+                      className="absolute px-4 py-3 rounded-md right-0
                 top-14 flex flex-col items-center justify-start gap-3 w-64 pt-12"
                       onMouseLeave={() => setIsMenu(false)}
                     >
