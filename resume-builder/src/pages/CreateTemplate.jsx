@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUpload } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 
 const CreateTemplate = () => {
@@ -32,7 +32,39 @@ const CreateTemplate = () => {
     const file = e.target.files[0];
     if (file && isAllowed(file)) {
       const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
-      const uploadTask = uploadBytesResumable
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapShot) => {
+          setImageAsset((prevAsset) => ({
+            ...prevAsset,
+            progress: (snapShot.bytesTransferred / snapShot.totalBytes) * 100,
+          }));
+        },
+        (error) => {
+          if (error.message.includes("Storage/unauthorized")) {
+            toast.error(`Error: Authorization revoked`);
+          } else {
+            toast.error(`Error: ${error.message}`);
+          }
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageAsset((prevAsset) => ({
+              ...prevAsset,
+              uri: downloadURL,
+            }));
+          });
+          toast.success("Image uploaded");
+          setTimeout(() => {
+            setImageAsset((prevAsset) => ({
+              ...prevAsset,
+              isImageLoading: false,
+            }));
+          }, 2000);
+        }
+      );
     } else {
       toast.info("Invalid file format.");
     }
@@ -74,34 +106,45 @@ const CreateTemplate = () => {
           onBlur={() => setIsFocused(false)}
         >
           {imageAsset.isImageLoading ? (
-            <div className="flex flex-col items-center justify-center gap-4">
-              <PuffLoader color="orange" size={40} />
-              <p>{imageAsset?.progress.toFixed(2)}%</p>
-            </div>
-          ) : (
-            !imageAsset?.uri && (
-              <React.Fragment>
-                <label className="w-full cursor-pointer h-full">
-                  <div className="flex items-center justify-center h-full w-full">
-                    <div
-                      className={`flex items-center justify-center cursor-pointer text-5xl transition duration-200 ${
-                        isHovered || isFocused
-                          ? "text-orange-500"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      <FaUpload />
-                    </div>
+            <React.Fragment>
+              <div className="flex flex-col items-center justify-center gap-4">
+                <PuffLoader color="orange" size={40} />
+                <p>{imageAsset.progress.toFixed(2)}%</p>
+              </div>
+            </React.Fragment>
+          ) : !imageAsset.uri ? (
+            <React.Fragment>
+              <label className="w-full cursor-pointer h-full">
+                <div className="flex items-center justify-center h-full w-full">
+                  <div
+                    className={`flex items-center justify-center cursor-pointer text-5xl transition duration-200 ${
+                      isHovered || isFocused
+                        ? "text-orange-500"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    <FaUpload />
                   </div>
-                  <input
-                    type="file"
-                    className="w-0 h-0"
-                    accept=".jpeg,.jpg,.png"
-                    onChange={handleFileSelect}
-                  />
-                </label>
-              </React.Fragment>
-            )
+                </div>
+                <input
+                  type="file"
+                  className="w-0 h-0"
+                  accept=".jpeg,.jpg,.png"
+                  onChange={handleFileSelect}
+                />
+              </label>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <div className="relative w-full h-full overflow-hidden rounded-md">
+                <img
+                  src={imageAsset.uri}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  alt=""
+                />
+              </div>
+            </React.Fragment>
           )}
         </div>
       </div>
