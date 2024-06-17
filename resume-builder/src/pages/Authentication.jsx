@@ -24,7 +24,11 @@ const Authentication = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {}, [isLoading, isError]);
+  useEffect(() => {
+    if (!isLoading && data) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, data]);
 
   return (
     <div className="auth-section">
