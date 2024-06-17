@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FaUpload } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
+import { toast } from "react-toastify";
+import { ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../config/firebase.config";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -25,8 +28,19 @@ const CreateTemplate = () => {
 
   // handle the image file changes
   const handleFileSelect = async (e) => {
+    setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
     const file = e.target.files[0];
-    console.log(file);
+    if (file && isAllowed(file)) {
+      const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
+      const uploadTask = uploadBytesResumable
+    } else {
+      toast.info("Invalid file format.");
+    }
+  };
+
+  const isAllowed = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
   };
 
   return (
