@@ -28,7 +28,7 @@ const Authentication = () => {
     if (!isLoading && data) {
       navigate("/", { replace: true });
     }
-  }, [isLoading, data]);
+  }, [isLoading, data, navigate]);
 
   return (
     <div className="auth-section">
