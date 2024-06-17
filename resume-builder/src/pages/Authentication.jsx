@@ -5,6 +5,8 @@ import { AuthButtonWithProvider } from "../components";
 import { Footer } from "../containers";
 import "../index.css";
 import { FaGoogle, FaGithub } from "react-icons/fa";
+import useUser from "../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 const Authentication = () => {
   const [animationFinished, setAnimationFinished] = useState(false);
@@ -17,6 +19,12 @@ const Authentication = () => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  const { data, isLoading, isError } = useUser();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {}, [isLoading, isError]);
 
   return (
     <div className="auth-section">

@@ -1,44 +1,31 @@
+import React, { useState } from "react";
+import { FaChevronRight } from "react-icons/fa";
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithRedirect,
 } from "firebase/auth";
-import React, { useState } from "react";
-import { FaChevronRight } from "react-icons/fa";
 import { auth } from "../config/firebase.config";
 
 const AuthButtonWithProvider = ({ Icon, label, provider }) => {
   const googleAuthProvider = new GoogleAuthProvider();
   const githubAuthProvider = new GithubAuthProvider();
+
   const handleClick = async () => {
-    switch (provider) {
-      case "GoogleAuthProvider":
-        await signInWithRedirect(auth, googleAuthProvider)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(`Error : ${err.Message}`);
-          });
-        break;
-      case "GitHubAuthProvider":
-        await signInWithRedirect(auth, githubAuthProvider)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(`Error : ${err.Message}`);
-          });
-        break;
-      default:
-        await signInWithRedirect(auth, googleAuthProvider)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(`Error : ${err.Message}`);
-          });
-        break;
+    try {
+      switch (provider) {
+        case "GoogleAuthProvider":
+          await signInWithRedirect(auth, googleAuthProvider);
+          break;
+        case "GitHubAuthProvider":
+          await signInWithRedirect(auth, githubAuthProvider);
+          break;
+        default:
+          await signInWithRedirect(auth, googleAuthProvider);
+          break;
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
     }
   };
 

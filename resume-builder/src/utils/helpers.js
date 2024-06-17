@@ -1,5 +1,5 @@
 
-export const adminIds = ["101057016679337500646"];
+export const adminIds = ["101057016679337500646", "121376211"];
 
 export const initialTags = [
   "Software Engineer",
