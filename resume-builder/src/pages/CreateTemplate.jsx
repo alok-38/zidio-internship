@@ -10,29 +10,27 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
-import { serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  serverTimestamp,
+  setDoc,
+  deleteDoc,
+  collection,
+  query,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../config/firebase.config";
 import { doc } from "firebase/firestore";
 import { initialTags } from "../utils/helpers";
 
 const fetchTemplates = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated delay
-  return [
-    {
-      _id: "1",
-      title: "Template 1",
-      imageURL: "https://example.com/image1.jpg",
-      tags: ["tag1", "tag2"],
-      timeStamp: serverTimestamp(),
-    },
-    {
-      _id: "2",
-      title: "Template 2",
-      imageURL: "https://example.com/image2.jpg",
-      tags: ["tag2", "tag3"],
-      timeStamp: serverTimestamp(),
-    },
-  ];
+  const templatesCollection = collection(db, "templates");
+  const querySnapshot = await getDocs(query(templatesCollection));
+  const templates = querySnapshot.docs.map((doc) => ({
+    _id: doc.id,
+    ...doc.data(),
+  }));
+  return templates;
 };
 
 const useTemplates = () => {
@@ -190,9 +188,24 @@ const CreateTemplate = () => {
       });
   };
 
-  const [isTrashHovered, setIsTrashHovered] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const deleteTemplate = async (templateId, imageURL) => {
+    try {
+      // Delete template document from Firestore
+      await deleteDoc(doc(db, "templates", templateId));
+
+      // Optionally delete associated image from Firebase Storage
+      if (imageURL) {
+        const storageRef = ref(storage, imageURL);
+        await deleteObject(storageRef);
+      }
+
+      // Invalidate query to update UI
+      queryClient.invalidateQueries("templates");
+      toast.success("Template deleted successfully");
+    } catch (error) {
+      toast.error(`Error deleting template: ${error.message}`);
+    }
+  };
 
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
@@ -213,12 +226,8 @@ const CreateTemplate = () => {
         <div
           tabIndex={0}
           className={`relative w-full bg-gray-200 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[740px] rounded-md cursor-pointer flex items-center justify-center border-2 border-gray-300 ${
-            isHovered || isFocused ? "border-orange-500" : ""
+            imageAsset.isImageLoading ? "border-orange-500" : ""
           } focus:outline-none`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
         >
           {imageAsset.isImageLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
@@ -228,11 +237,7 @@ const CreateTemplate = () => {
           ) : !imageAsset.uri ? (
             <label className="w-full cursor-pointer h-full">
               <div className="flex items-center justify-center h-full w-full">
-                <div
-                  className={`flex items-center justify-center cursor-pointer text-5xl transition duration-200 ${
-                    isHovered || isFocused ? "text-orange-500" : "text-gray-400"
-                  }`}
-                >
+                <div className="flex items-center justify-center cursor-pointer text-5xl transition duration-200 text-gray-400">
                   <FaUpload />
                 </div>
               </div>
@@ -254,13 +259,7 @@ const CreateTemplate = () => {
                 />
                 <div
                   onClick={deleteAnImageObject}
-                  className={`absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center cursor-pointer ${
-                    isTrashHovered
-                      ? "bg-red-600"
-                      : "bg-gray-600 hover:bg-red-600"
-                  }`}
-                  onMouseEnter={() => setIsTrashHovered(true)}
-                  onMouseLeave={() => setIsTrashHovered(false)}
+                  className={`absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center cursor-pointer bg-gray-600 hover:bg-red-600`}
                 >
                   <FaTrash className="text-white text-sm hover:text-lg" />
                 </div>
@@ -324,15 +323,22 @@ const CreateTemplate = () => {
                         alt=""
                         className="w-full h-full object-cover"
                       />
+                      <div
+                        className="absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center cursor-pointer bg-gray-600 hover:bg-red-600"
+                        onClick={() =>
+                          deleteTemplate(template._id, template.imageURL)
+                        }
+                      >
+                        <FaTrash className="text-white text-sm hover:text-lg" />
+                      </div>
                     </div>
                   </React.Fragment>
                 ))}
               </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <PuffLoader color="orange" size={40} />
                 <p className="text-xl tracking-wider capitalize text-txtPrimary">
-                  No data
+                  No templates found
                 </p>
               </div>
             )}
