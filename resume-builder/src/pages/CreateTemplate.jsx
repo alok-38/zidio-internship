@@ -10,11 +10,12 @@ import {
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 import { initialTags } from "../utils/helpers";
-import { serverTimestamp } from "firebase/firestore";
+import { serverTimestamp, setDoc } from "firebase/firestore";
 import { useTemplates } from "../hooks/useTemplates";
+import { db } from "../config/firebase.config";
+import { doc } from "firebase/firestore";
 
 const CreateTemplate = () => {
-
   const [formData, setFormData] = useState({
     title: "",
     imageURL: null,
@@ -153,8 +154,17 @@ const CreateTemplate = () => {
       timeStamp: timeStamp,
     };
 
-    // Here you might want to save _doc to your database or perform further actions
-    console.log(_doc);
+    await setDoc(doc(db, "templates", id), _doc)
+      .then(() => {
+        setFormData((prevData) => ({ ...prevData, title: "", imageURL: "" }));
+        setImageAsset((prevAsset) => ({ ...prevAsset, uri: null }));
+        setSelectedTags([]);
+        templatesRefetch();
+        toast.success("Data pushed to the cloud");
+      })
+      .catch((error) => {
+        toast.error(`Error : ${error.message}`);
+      });
   };
 
   return (
