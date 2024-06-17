@@ -34,7 +34,7 @@ const Authentication = () => {
         >
           Innovative way to create resume
         </p>
-        <div className="text-2xl lg:w-96 rounded-md flex flex-col items-center justify-start gap-6 p-2">
+        <div className="text-2xl lg:w-96 rounded-md flex flex-col items-center justify-center text-center gap-6 p-2">
           <AuthButtonWithProvider
             Icon={FaGoogle}
             label={"Sign in with Google"}
