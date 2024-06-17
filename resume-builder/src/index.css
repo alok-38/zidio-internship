@@ -19,3 +19,18 @@ body {
     @apply w-full h-screen overflow-hidden flex flex-col items-start justify-start px-6 py-4 gap-6;
   }
 }
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease forwards;
+}

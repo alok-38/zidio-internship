@@ -11,7 +11,7 @@ import { useQueryClient } from "react-query";
 import { adminIds } from "../utils/helpers";
 
 const Header = () => {
-  const { data, isLoading, isError } = useUser();
+  const { data, isLoading } = useUser();
   const [isMenu, setIsMenu] = useState(false);
 
   const queryClient = useQueryClient();
