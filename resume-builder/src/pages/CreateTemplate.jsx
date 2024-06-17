@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaUpload, FaTrash } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { useQuery, useQueryClient } from "react-query"; // Import useQuery and useQueryClient from react-query
 import {
   getDownloadURL,
   ref,
@@ -9,13 +10,38 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
-import { initialTags } from "../utils/helpers";
 import { serverTimestamp, setDoc } from "firebase/firestore";
-import { useTemplates } from "../hooks/useTemplates";
 import { db } from "../config/firebase.config";
 import { doc } from "firebase/firestore";
+import { initialTags } from "../utils/helpers";
+
+const fetchTemplates = async () => {
+  // Simulate API fetch (replace with actual fetch from your API)
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated delay
+  return [
+    {
+      _id: "1",
+      title: "Template 1",
+      imageURL: "https://example.com/image1.jpg",
+      tags: ["tag1", "tag2"],
+      timeStamp: serverTimestamp(),
+    },
+    {
+      _id: "2",
+      title: "Template 2",
+      imageURL: "https://example.com/image2.jpg",
+      tags: ["tag2", "tag3"],
+      timeStamp: serverTimestamp(),
+    },
+  ];
+};
+
+const useTemplates = () => {
+  return useQuery("templates", fetchTemplates); // useQuery hook to fetch templates data
+};
 
 const CreateTemplate = () => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     title: "",
     imageURL: null,
@@ -28,7 +54,6 @@ const CreateTemplate = () => {
   });
 
   const [selectedTags, setSelectedTags] = useState([]);
-
   const {
     data: templates,
     isError: templatesIsError,
@@ -36,17 +61,11 @@ const CreateTemplate = () => {
     refetch: templatesRefetch,
   } = useTemplates();
 
-  const [isTrashHovered, setIsTrashHovered] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-
-  // handling the input field change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevRec) => ({ ...prevRec, [name]: value }));
   };
 
-  // handle the image file changes
   const handleFileSelect = async (e) => {
     setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: true }));
     const file = e.target.files[0];
@@ -96,7 +115,6 @@ const CreateTemplate = () => {
     }
   };
 
-  // action to delete an image from the cloud
   const deleteAnImageObject = async () => {
     if (!imageAsset.uri) return;
 
@@ -128,9 +146,7 @@ const CreateTemplate = () => {
   };
 
   const handleSelectedTags = (tag) => {
-    // check if the tag is selected or not
     if (selectedTags.includes(tag)) {
-      // if selected then remove it
       setSelectedTags(selectedTags.filter((selected) => selected !== tag));
     } else {
       setSelectedTags([...selectedTags, tag]);
@@ -159,7 +175,7 @@ const CreateTemplate = () => {
         setFormData((prevData) => ({ ...prevData, title: "", imageURL: "" }));
         setImageAsset((prevAsset) => ({ ...prevAsset, uri: null }));
         setSelectedTags([]);
-        templatesRefetch();
+        queryClient.invalidateQueries("templates"); // Invalidate templates query to refetch
         toast.success("Data pushed to the cloud");
       })
       .catch((error) => {
@@ -167,9 +183,13 @@ const CreateTemplate = () => {
       });
   };
 
+  const [isTrashHovered, setIsTrashHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
-      {/* left container */}
+      {/* Left container */}
       <div className="col-span-12 lg:col-span-4 2xl:col-span-3 w-full flex-1 flex items-center justify-start flex-col gap-4 px-2">
         <div className="w-full">
           <p className="text-lg text-txtPrimary">Create a new Template</p>
@@ -262,7 +282,8 @@ const CreateTemplate = () => {
             </div>
           ))}
         </div>
-        {/* button action */}
+
+        {/* Save button */}
         <button
           onClick={pushToCloud}
           type="button"
@@ -285,9 +306,37 @@ const CreateTemplate = () => {
         </button>
       </div>
 
-      {/* right container */}
+      {/* Right container */}
       <div className="col-span-12 lg:col-span-8 2xl:col-span-9">
-        {/* Right container content */}
+        {/* Display fetched templates */}
+        <div>
+          {templatesIsLoading && <p>Loading...</p>}
+          {templatesIsError && <p>Error fetching templates.</p>}
+          {templates && (
+            <ul>
+              {templates.map((template) => (
+                <li key={template._id}>
+                  <p>{template.title}</p>
+                  <img
+                    src={template.imageURL}
+                    alt="Template"
+                    className="h-24 w-auto"
+                  />
+                  <div className="flex gap-2">
+                    {template.tags.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="border border-orange-300 px-2 py-1 rounded-md"
+                      >
+                        <p className="text-xs">{tag}</p>
+                      </div>
+                    ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
