@@ -12,10 +12,8 @@ import {
 const HomeScreen = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      {/* Header */}
       <Header />
       <main className="w-full">
-        {/* custom routes */}
         <Suspense fallback={<MainSpinner />}>
           <Routes>
             <Route path="/" element={<HomeContainer />} />
