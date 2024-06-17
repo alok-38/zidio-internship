@@ -23,6 +23,12 @@ const CreateTemplate = () => {
     setFormData((prevRec) => ({ ...prevRec, [name]: value }));
   };
 
+  // handle the image file changes
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+  };
+
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
       {/* left container */}
@@ -73,6 +79,12 @@ const CreateTemplate = () => {
                       <FaUpload />
                     </div>
                   </div>
+                  <input
+                    type="file"
+                    className="w-0 h-0"
+                    accept=".jpeg,.jpg,.png"
+                    onChange={handleFileSelect}
+                  />
                 </label>
               </React.Fragment>
             )
