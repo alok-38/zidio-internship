@@ -45,12 +45,26 @@ const Header = () => {
       <div className="flex-1 px-4 py-1 rounded-md flex items-center justify-between border-2 focus-within:border-orange-500 hover:border-orange-600">
         <input
           onChange={handleSearchTerm}
-          value={filterData && filterData.searchTerm ? filterData.searchTerm : ""}
+          value={
+            filterData && filterData.searchTerm ? filterData.searchTerm : ""
+          }
           type="text"
           placeholder="Search here..."
           className="flex border px-4 py-1 rounded-md flex-1 items-center justify-between bg-gray-200 border-none outline-none h-10 focus:outline-none font-semibold cursor-pointer"
         />
+        <AnimatePresence>
+          {filterData.searchTerm.length > 0 && (
+            <motion.div
+              {...FadeInOutWIthOpacity}
+              className="w-8 h-8 flex items-center justify-center bg-gray-300
+          rounded-md cursor-pointer active:scale-95 duration-150"
+            >
+              <p className="text-2xl text-black">x</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+      {/* profile section */}
       <AnimatePresence>
         {isLoading ? (
           <PuffLoader color="orange" size={40} />
@@ -94,11 +108,15 @@ const Header = () => {
                         </div>
                       ) : (
                         <div className="w-20 h-20 rounded-full relative flex items-center justify-center bg-orange-500 shadow-md cursor-pointer">
-                          <p className="text-lg text-white">{data.displayName[0]}</p>
+                          <p className="text-lg text-white">
+                            {data.displayName[0]}
+                          </p>
                         </div>
                       )}
                       {data.displayName && (
-                        <p className="text-3xl text-orange-600">{data.displayName[0]}</p>
+                        <p className="text-3xl text-orange-600">
+                          {data.displayName[0]}
+                        </p>
                       )}
 
                       <div className="w-full flex flex-col items-start gap-8 pt-6">
