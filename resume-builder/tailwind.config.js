@@ -12,10 +12,10 @@ module.exports = {
   },
   variants: {
     extend: {
-      borderColor: ["hover", "focus"],  // Enables hover and focus variants for borderColor
-      scale: ["hover"],                 // Enables hover variant for scale
-      ringColor: ["focus"],             // Enables focus variant for ringColor
+      borderColor: ["hover", "focus"], // Enables hover and focus variants for borderColor
+      scale: ["hover"], // Enables hover variant for scale
+      ringColor: ["focus"], // Enables focus variant for ringColor
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")],
 };
