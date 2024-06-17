@@ -9,6 +9,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { storage } from "../config/firebase.config";
+import { initialTags } from "../utils/helpers";
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,8 @@ const CreateTemplate = () => {
     uri: null,
     progress: 0,
   });
+
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [isTrashHovered, setIsTrashHovered] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -113,6 +116,16 @@ const CreateTemplate = () => {
     return allowedTypes.includes(file.type);
   };
 
+  const handleSelectedTags = (tag) => {
+    // check if the tag is selected or not
+    if (selectedTags.includes(tag)) {
+      // if selected then remove it
+      setSelectedTags(selectedTags.filter((selected) => selected !== tag));
+    } else {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
+
   return (
     <div className="w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12">
       {/* left container */}
@@ -192,6 +205,21 @@ const CreateTemplate = () => {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Tags section */}
+        <div className="w-full flex items-center flex-wrap gap-2 mt-4">
+          {initialTags.map((tag, index) => (
+            <div
+              key={index}
+              className={`border border-orange-300 px-2 py-1 rounded-md cursor-pointer ${
+                selectedTags.includes(tag) ? "bg-orange-500 text-white" : ""
+              }`}
+              onClick={() => handleSelectedTags(tag)}
+            >
+              <p className="text-xs">{tag}</p>
+            </div>
+          ))}
         </div>
       </div>
 
