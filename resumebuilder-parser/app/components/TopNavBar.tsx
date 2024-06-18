@@ -21,14 +21,14 @@ export const TopNavBar = () => {
         <Link href="/">
           <div className="flex items-center justify-center gap-1">
             <Image
-              src={"assets/heart.svg"}
+              src={"assets/resume-svgrepo-com.svg"}
               width={16}
               height={16}
               alt="logo"
               className="h-8 w-full"
               priority
             />
-            <h1 className="text-xl whitespace-nowrap font-bold text-primary">
+            <h1 className="text-xl whitespace-nowrap font-bold  text-[#8910F1]">
               Resume Builder & Parser
             </h1>
           </div>
@@ -43,7 +43,8 @@ export const TopNavBar = () => {
           ].map(([href, text]) => (
             <Link
               key={text}
-              className="rounded-md px-1.5 py-2 text-gray-500 hover:bg-gray-100 focus-visible:bg-gray-100 lg:px-4"
+              className="rounded-md px-1.5 py-2 text-gray-500 focus-visible:bg-gray-100 lg:px-4
+              hover:bg-[#8910F1] hover:text-white"
               href={href}
             >
               {text}
