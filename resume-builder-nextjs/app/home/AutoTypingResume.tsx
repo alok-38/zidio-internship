@@ -1,5 +1,6 @@
 "use client";
 
+// Import statements remain the same
 import { useEffect, useRef, useState } from "react";
 import { deepClone } from "../lib/parse-resume-from-pdf/deep-clone";
 import { initialResumeState } from "../lib/redux/resumeSlice";
@@ -34,7 +35,7 @@ export const AutoTypingResume = () => {
     }, 50);
 
     return () => clearInterval(intervalId);
-  });
+  }, []); // Added empty dependency array to run this effect only once on component mount
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -45,7 +46,7 @@ export const AutoTypingResume = () => {
       hasSetEndResume.current = false;
     }, 60 * 1000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, []); // Added empty dependency array to run this effect only once on component mount
 
   return (
     <>
@@ -56,12 +57,12 @@ export const AutoTypingResume = () => {
             ...initialSettings,
             fontSize: "12",
             formToHeading: {
-              workExperiences: resume.workExperiences[0].company
+              workExperiences: resume.workExperiences[0]?.company
                 ? "WORK EXPERIENCE"
                 : "",
-              educations: resume.educations[0].school ? "EDUCATION" : "",
-              projects: resume.projects[0].project ? "PROJECT" : "",
-              skills: resume.skills.featuredSkills[0].skill ? "SKILLS" : "",
+              educations: resume.educations[0]?.school ? "EDUCATION" : "",
+              projects: resume.projects[0]?.project ? "PROJECT" : "",
+              skills: resume.skills.featuredSkills[0]?.skill ? "SKILLS" : "",
               custom: "CUSTOM SECTION",
             },
           }}
