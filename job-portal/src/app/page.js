@@ -1,5 +1,7 @@
-import Image from "next/image";
-
 export default function Home() {
-  return <section>Main Content</section>;
+  return (
+   <section className="relative w-full h-full min-h-screen pb-10">
+      Main Content
+   </section>
+  );
 }

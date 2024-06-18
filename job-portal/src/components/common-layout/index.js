@@ -1,5 +1,7 @@
-import  Header  from "../header";
-function CommonLayout({ children }) {
+import Header from "../header";
+import * as React from "react";
+
+function CommonLayout({ children, ...props }) {
   return (
     <div className="mx-auto max-w-7xl p-6 lg:px-8">
       {/* Header Component */}
