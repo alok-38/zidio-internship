@@ -29,7 +29,7 @@ export const TopNavBar = () => {
               priority
             />
             <h1 className="text-xl whitespace-nowrap font-bold  text-[#8910F1]">
-              Resume Builder & Parser
+              Zidio Resume
             </h1>
           </div>
         </Link>
