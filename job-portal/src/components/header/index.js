@@ -11,13 +11,13 @@ function Header() {
       show: true,
     },
     {
-      label: "About",
-      path: "/about",
+      label: "Login",
+      path: "/sign-in",
       show: true,
     },
     {
-      label: "Contact",
-      path: "/contact",
+      label: "Register",
+      path: "/sign-up",
       show: true,
     },
   ];
@@ -39,7 +39,7 @@ function Header() {
                   menuItem.show ? (
                     <Link key={index} href={menuItem.path}>
                       {/* Use a div or span inside the Link */}
-                      <div className="flex w-full items-center py-2 text-lg font-semibold">
+                      <div className="flex w-full items-center py-2 text-lg hover:font-semibold">
                         {menuItem.label}
                       </div>
                     </Link>

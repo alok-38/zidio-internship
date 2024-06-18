@@ -3,6 +3,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import CommonLayout from "@/components/common-layout";
 import Loading from "./loading";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,12 +14,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Suspense fallback={<Loading />}>
-          <CommonLayout children={children} />
-        </Suspense>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Suspense fallback={<Loading />}>
+            <CommonLayout children={children} />
+          </Suspense>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
