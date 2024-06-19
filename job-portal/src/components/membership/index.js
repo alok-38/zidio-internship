@@ -9,9 +9,13 @@ import {
   createStripePaymentAction,
   updateProfileAction,
 } from "@/actions";
+import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
+const stripePromise = loadStripe(
+  "pk_test_51NMv6ZSC6E6fnyMeRIEb9oEXdGRCC9yrBTT4xWHgcjWOuFcqFiAHErvaS50K1hl5t5WJXVGfLLWxvb705IWJhA3300yCcrMnlM"
+);
 
 function Membership({ profileInfo }) {
   const pathName = useSearchParams();
@@ -101,6 +105,7 @@ function Membership({ profileInfo }) {
           <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
             {membershipPlans.map((plan, index) => (
               <CommonCard
+                key={plan.type} // Use a unique identifier as the key prop
                 icon={
                   <div className="flex justify-between">
                     <div>
@@ -115,8 +120,8 @@ function Membership({ profileInfo }) {
                   profileInfo?.memberShipType === "enterprise" ||
                   (profileInfo?.memberShipType === "basic" && index === 0) ||
                   (profileInfo?.memberShipType === "teams" &&
-                  index >= 0 &&
-                  index < 2 ? null : (
+                    index >= 0 &&
+                    index < 2) ? null : (
                     <Button
                       onClick={() => handlePayment(plan)}
                       className="disabled:opacity-65 dark:bg-[#fffa27] flex h-11 items-center justify-center px-5"
@@ -126,7 +131,7 @@ function Membership({ profileInfo }) {
                         ? "Update Plan"
                         : "Get Premium"}
                     </Button>
-                  ))
+                  )
                 }
               />
             ))}

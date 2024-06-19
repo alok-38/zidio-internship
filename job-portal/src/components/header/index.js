@@ -69,13 +69,14 @@ function Header({ user, profileInfo }) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link className="mr-6 hidden lg:flex" href={"#"}>
-              <h3>JOBSCO</h3>
+            <Link href={"/"} className="mr-6 hidden lg:flex">
+              <h3>Zidio Jobs</h3>
             </Link>
             <div className="grid gap-2 py-6">
               {menuItems.map((menuItem) =>
                 menuItem.show ? (
                   <Link
+                    key={menuItem.label} // Unique key prop added here
                     href={menuItem.path}
                     className="flex w-full items-center py-2 text-lg font-semibold"
                   >
@@ -92,16 +93,17 @@ function Header({ user, profileInfo }) {
             </div>
           </SheetContent>
         </Sheet>
-        <Link className="hidden font-bold text-3xl lg:flex mr-6" href={"/"}>
-          JOBSCO
+        <Link href={"/"} className="hidden font-bold text-3xl lg:flex mr-6">
+          Zidio Jobs
         </Link>
         <nav className="ml-auto hidden lg:flex gap-6 items-center">
           {menuItems.map((menuItem) =>
             menuItem.show ? (
               <Link
+                key={menuItem.label} // Unique key prop added here
                 href={menuItem.path}
                 onClick={() => sessionStorage.removeItem("filterParams")}
-                className="group inline-flex h-9 w-max items-center rounded-md  px-4 py-2 text-sm font-medium"
+                className="group inline-flex h-9 w-max items-center rounded-md px-4 py-2 text-sm font-medium"
               >
                 {menuItem.label}
               </Link>
