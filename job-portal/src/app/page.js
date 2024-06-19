@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 async function Home() {
   const user = await currentUser();
-  if (user && !profileInfo?._id) redirect("/onboard");
   return (
     <section className="relative w-full h-full min-h-screen pb-10">
       <div className="w-full h-full relative">
