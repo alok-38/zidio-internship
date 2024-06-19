@@ -43,9 +43,9 @@ function CommonForm({
 
       case "file":
         content = (
-          <Label
+          <label
             key={getCurrentControl.name}
-            for={getCurrentControl.name}
+            htmlFor={getCurrentControl.name} // Corrected attribute name to htmlFor
             className="flex bg-gray-100 dark:bg-black items-center px-3 py-3 mx-auto mt-6 text-center border-2 border-dashed rounded-lg cursor-pointer"
           >
             <h2>{getCurrentControl.label}</h2>
@@ -54,7 +54,7 @@ function CommonForm({
               id={getCurrentControl.name}
               type="file"
             />
-          </Label>
+          </label>
         );
         break;
 
