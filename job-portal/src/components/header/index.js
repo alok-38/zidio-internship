@@ -7,7 +7,7 @@ import { AlignJustify, Moon } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 
-function Header({ user, profileInfo }) {
+function Header({ user }) {
   const { theme, setTheme } = useTheme();
 
   const menuItems = [
@@ -19,12 +19,32 @@ function Header({ user, profileInfo }) {
     {
       label: "Login",
       path: "/sign-in",
-      show: true,
+      show: !user,
     },
     {
       label: "Register",
       path: "/sign-up",
-      show: true,
+      show: !user,
+    },
+    {
+      label: "Jobs",
+      path: "/jobs",
+      show: user,
+    },
+    {
+      label: "Activity",
+      path: "/activity",
+      show: user,
+    },
+    {
+      label: "Membership",
+      path: "/membership",
+      show: user,
+    },
+    {
+      label: "Account",
+      path: "/account",
+      show: user,
     },
   ];
 
@@ -40,7 +60,7 @@ function Header({ user, profileInfo }) {
           </SheetTrigger>
           <SheetContent side="left">
             <Link href={"/"} className="mr-6 hidden lg:flex">
-              <h3>JOBSCO</h3>
+              <h3>JOB PORTAL</h3>
             </Link>
             <div className="grid gap-2 py-6">
               {menuItems.map((menuItem, index) =>
