@@ -15,7 +15,7 @@ import { useUser } from "@clerk/clerk-react";
 function onBoard() {
   return (
     <div className="bg-white">
-      <Tabs value={currentTab} onValueChange={handleTabChange}>
+      <Tabs>
         <div className="w-full">
           <div className="flex items-baseline justify-between border-b pb-6 pt-24">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">

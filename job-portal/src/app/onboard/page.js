@@ -1,10 +1,11 @@
 import { currentUser } from "@clerk/nextjs/server";
+import OnBoard from "@/components/on-board";
 async function OnBoardPage() {
   //get the auth user from clerk
   const user = await currentUser();
 
   //fetch the profile info -> either user is candidate / user is recruiter
-  return <div>This is our onboard page</div>;
+  return <OnBoard />;
 }
 
 export default OnBoardPage;
