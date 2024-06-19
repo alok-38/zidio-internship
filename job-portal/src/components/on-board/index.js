@@ -14,10 +14,7 @@ import { createProfileAction } from "@/actions";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseClient = createClient(
-  "https://ayosstfvmrymvppfrqfe.supabase.co",
-  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-    .eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5b3NzdGZ2bXJ5bXZwcGZycWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg3OTMzNDAsImV4cCI6MjAzNDM2OTM0MH0
-    .n2mtQLtfgnRRKcXRee8rWVc0U58C6KEfxGrAUEmuAks
+  "https://ayosstfvmrymvppfrqfe.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5b3NzdGZ2bXJ5bXZwcGZycWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg3OTMzNDAsImV4cCI6MjAzNDM2OTM0MH0.n2mtQLtfgnRRKcXRee8rWVc0U58C6KEfxGrAUEmuAks",
 );
 
 function OnBoard() {

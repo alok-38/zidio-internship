@@ -3,16 +3,26 @@ import connectToDB from "@/database";
 import Profile from "@/models/profile";
 import { revalidatePath } from "next/cache";
 
-//create profile action
+// Create profile action
 export async function createProfileAction(formData, pathToRevalidate) {
-  await connectToDB();
-  await Profile.create(formData);
-  revalidatePath(pathToRevalidate);
+  try {
+    await connectToDB();
+    await Profile.create(formData);
+    revalidatePath(pathToRevalidate);
+  } catch (error) {
+    console.error("Error creating profile:", error.message);
+    throw error; // Rethrow the error to handle it where createProfileAction is called
+  }
 }
 
+// Fetch profile action
 export async function fetchProfileAction(id) {
-  await connectToDB();
-  const result = await Profile.findOne({ userId: id });
-
-  return JSON.parse(JSON.stringify(result));
+  try {
+    await connectToDB();
+    const result = await Profile.findOne({ userId: id });
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error("Error fetching profile:", error.message);
+    throw error; // Rethrow the error to handle it where fetchProfileAction is called
+  }
 }
