@@ -9,6 +9,8 @@ import {
   initialRecruiterFormData,
   recruiterOnboardFormControls,
 } from "@/utils";
+import { createProfileAction } from "@/actions";
+import { useUser } from "@clerk/clerk-react";
 
 function OnBoard() {
   const [currentTab, setCurrentTab] = useState("candidate");
@@ -19,6 +21,9 @@ function OnBoard() {
   const [candidateFormData, setCandidateFormData] = useState(
     initialCandidateFormData
   );
+
+  const currentAuthUser = useUser();
+  const { user } = currentAuthUser;
 
   function handleFileChange(event) {
     event.preventDefault();
@@ -101,7 +106,7 @@ function OnBoard() {
             formData={recruiterFormData}
             setFormData={setRecruiterFormData}
             isBtnDisabled={!handleRecuiterFormValid()}
-            action={createProfile}
+            action={createProfileAction}
           />
         </TabsContent>
       </Tabs>

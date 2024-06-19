@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import CommonLayout from "@/components/common-layout";
 import Loading from "./loading";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,8 +19,13 @@ export default function RootLayout({ children }) {
       <html lang="en">
         <body className={inter.className}>
           <Suspense fallback={<Loading />}>
-            <CommonLayout children={children} />
+            <CommonLayout
+              attribute="class"
+              defaultTheme="system"
+              children={children}
+            />
           </Suspense>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
