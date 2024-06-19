@@ -7,7 +7,7 @@ import { AlignJustify, Moon } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 
-function Header({ user }) {
+function Header({ user, profileInfo }) {
   const { theme, setTheme } = useTheme();
 
   const menuItems = [
@@ -15,6 +15,11 @@ function Header({ user }) {
       label: "Home",
       path: "/",
       show: true,
+    },
+    {
+      label: "Feed",
+      path: "/feed",
+      show: profileInfo,
     },
     {
       label: "Login",
@@ -27,24 +32,29 @@ function Header({ user }) {
       show: !user,
     },
     {
-      label: "Jobs",
-      path: "/jobs",
-      show: user,
-    },
-    {
       label: "Activity",
       path: "/activity",
-      show: user,
+      show: profileInfo?.role === "candidate",
+    },
+    {
+      label: "Companies",
+      path: "/companies",
+      show: profileInfo?.role === "candidate",
+    },
+    {
+      label: "Jobs",
+      path: "/jobs",
+      show: profileInfo,
     },
     {
       label: "Membership",
       path: "/membership",
-      show: user,
+      show: profileInfo,
     },
     {
       label: "Account",
       path: "/account",
-      show: user,
+      show: profileInfo,
     },
   ];
 
@@ -59,14 +69,13 @@ function Header({ user }) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link href={"/"} className="mr-6 hidden lg:flex">
-              <h3>JOB PORTAL</h3>
+            <Link className="mr-6 hidden lg:flex" href={"#"}>
+              <h3>JOBSCO</h3>
             </Link>
             <div className="grid gap-2 py-6">
-              {menuItems.map((menuItem, index) =>
+              {menuItems.map((menuItem) =>
                 menuItem.show ? (
                   <Link
-                    key={index} // Add key prop here
                     href={menuItem.path}
                     className="flex w-full items-center py-2 text-lg font-semibold"
                   >
@@ -83,17 +92,16 @@ function Header({ user }) {
             </div>
           </SheetContent>
         </Sheet>
-        <Link href={"/"} className="hidden font-bold text-3xl lg:flex mr-6">
-          JOB PORTAL
+        <Link className="hidden font-bold text-3xl lg:flex mr-6" href={"/"}>
+          JOBSCO
         </Link>
         <nav className="ml-auto hidden lg:flex gap-6 items-center">
-          {menuItems.map((menuItem, index) =>
+          {menuItems.map((menuItem) =>
             menuItem.show ? (
               <Link
-                key={index} // Add key prop here
                 href={menuItem.path}
                 onClick={() => sessionStorage.removeItem("filterParams")}
-                className="group inline-flex h-9 w-max items-center rounded-md px-4 py-2 text-sm font-medium"
+                className="group inline-flex h-9 w-max items-center rounded-md  px-4 py-2 text-sm font-medium"
               >
                 {menuItem.label}
               </Link>
