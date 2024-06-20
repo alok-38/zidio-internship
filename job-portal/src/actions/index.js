@@ -1,4 +1,5 @@
-"use server";
+
+"use server"; // Ensure serverActions feature flag is enabled in next.config.js
 
 import connectToDB from "@/database";
 import Application from "@/models/application";
@@ -6,10 +7,10 @@ import Feed from "@/models/feed";
 import Job from "@/models/job";
 import Profile from "@/models/profile";
 import { revalidatePath } from "next/cache";
-
 const stripe = require("stripe")(
   "sk_test_51NMv6ZSC6E6fnyMeTYV3h3Xge6Tot3xYQVEO6KMpiB5A6bKIrRS9YymIBEupAFqF0XM274IwwU2Zq7EXx1Pn8LiA00SyPEZqk9"
 );
+
 
 //create profile action
 export async function createProfileAction(formData, pathToRevalidate) {

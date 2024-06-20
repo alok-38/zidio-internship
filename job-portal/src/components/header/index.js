@@ -69,17 +69,22 @@ function Header({ user, profileInfo }) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link className="mr-6 hidden lg:flex" href={"#"}>
-              <h3>Zidio Jobs</h3>
+            <Link href={"/"} passHref>
+              <div className="mr-6 hidden lg:flex cursor-pointer">
+                <h3>Zidio Jobs</h3>
+              </div>
             </Link>
             <div className="grid gap-2 py-6">
-              {menuItems.map((menuItem) =>
+              {menuItems.map((menuItem, index) =>
                 menuItem.show ? (
                   <Link
+                    key={index} // Assigning key prop here
                     href={menuItem.path}
-                    className="flex w-full items-center py-2 text-lg font-semibold"
+                    passHref
                   >
-                    {menuItem.label}
+                    <div className="flex w-full items-center py-2 text-lg font-semibold cursor-pointer">
+                      {menuItem.label}
+                    </div>
                   </Link>
                 ) : null
               )}
@@ -92,18 +97,23 @@ function Header({ user, profileInfo }) {
             </div>
           </SheetContent>
         </Sheet>
-        <Link className="hidden font-bold text-3xl lg:flex mr-6" href={"/"}>
-          Zidio Jobs
+        <Link href={"/"} passHref>
+          <div className="hidden font-bold text-3xl lg:flex mr-6 cursor-pointer">
+            Zidio Jobs
+          </div>
         </Link>
         <nav className="ml-auto hidden lg:flex gap-6 items-center">
-          {menuItems.map((menuItem) =>
+          {menuItems.map((menuItem, index) =>
             menuItem.show ? (
               <Link
+                key={index} // Assigning key prop here
                 href={menuItem.path}
                 onClick={() => sessionStorage.removeItem("filterParams")}
-                className="group inline-flex h-9 w-max items-center rounded-md  px-4 py-2 text-sm font-medium"
+                passHref
               >
-                {menuItem.label}
+                <div className="group inline-flex h-9 w-max items-center rounded-md px-4 py-2 text-sm font-medium cursor-pointer">
+                  {menuItem.label}
+                </div>
               </Link>
             ) : null
           )}
