@@ -1,5 +1,4 @@
 import Header from "@/components/custom/Header";
-import { UserButton } from "@clerk/clerk-react";
 import { AtomIcon, Edit, Share2 } from "lucide-react";
 import React from "react";
 
@@ -21,7 +20,9 @@ function Home() {
               <span className="text-xs bg-primary rounded-full text-white px-4 py-1.5 mr-3">
                 New
               </span>{" "}
-              <span className="text-sm font-medium">All new Apps</span>
+              <span className="text-sm font-medium">
+                 All new Apps
+              </span>
               <svg
                 className="ml-2 w-5 h-5"
                 fill="currentColor"
@@ -29,10 +30,10 @@ function Home() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fillRule="evenodd"
+                  fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
+                  clip-rule="evenodd"
+                ></path>
               </svg>
             </a>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
@@ -54,10 +55,10 @@ function Home() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
+                    fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
                 </svg>
               </a>
               <a
