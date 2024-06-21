@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input";
 import React, { useContext, useEffect, useState } from "react";
-import { Rating } from "@smastrom/react-rating";
 
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
