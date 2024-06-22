@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import GlobalApi from "./../../../../../service/GlobalApi";
 import { Brain, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
+import { AIChatSession } from "./../../../../../service/AIModal";
 
 const prompt =
   "Job Title: {jobTitle} , Depends on job title give me list of  summery for 3 experience level, Mid Level and Freasher level in 3 -4 lines in array format, With summery and experience_level Field in JSON Format";
@@ -41,6 +44,17 @@ function Summery({ enabledNext }) {
         summery: summery,
       },
     };
+    GlobalApi.UpdateResumeDetail(params?.resumeId, data).then(
+      (resp) => {
+        console.log(resp);
+        enabledNext(true);
+        setLoading(false);
+        toast("Details updated");
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
   return (
     <div>

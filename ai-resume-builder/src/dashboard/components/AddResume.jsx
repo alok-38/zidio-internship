@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import GlobalApi from "./../../../service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
 import { Navigate, useNavigate } from "react-router-dom";
 
@@ -26,12 +27,26 @@ function AddResume() {
     const data = {
       data: {
         title: resumeTitle,
-        resumeId:uuid,
+        resumeId: uuid,
         userEmail: user?.primaryEmailAddress?.emailAddress,
         userName: user?.fullName,
       },
     };
 
+    GlobalApi.CreateNewResume(data).then(
+      (resp) => {
+        console.log(resp.data.data.documentId);
+        if (resp) {
+          setLoading(false);
+          navigation(
+            "/dashboard/resume/" + resp.data.data.documentId + "/edit"
+          );
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
   return (
     <div>
