@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    // ...
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
-    // ...
-  }
+  },
+  "typeAcquisition": {
+    "include": ["scheduler"]
+  },
+  "exclude": ["node_modules"]
 }
