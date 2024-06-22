@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { v4 as uuidv4 } from 'uuid';
 import { useUser } from "@clerk/clerk-react";
 import { Navigate, useNavigate } from "react-router-dom";
 
@@ -21,9 +22,11 @@ function AddResume() {
   const navigation = useNavigate();
   const onCreate = async () => {
     setLoading(true);
+    const uuid = uuidv4();
     const data = {
       data: {
         title: resumeTitle,
+        resumeId:uuid,
         userEmail: user?.primaryEmailAddress?.emailAddress,
         userName: user?.fullName,
       },
