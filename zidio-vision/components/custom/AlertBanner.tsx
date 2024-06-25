@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { Rocket, TriangleAlert } from "lucide-react";
 
 // Define a type for the variant prop of Alert component

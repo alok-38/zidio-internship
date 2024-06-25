@@ -1,7 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { useState } from "react";
+import { useState, forwardRef, ForwardedRef } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,12 +22,14 @@ interface Option {
 }
 
 interface ComboBoxProps {
-  options: Option[];
+  options?: Option[];
   value?: string;
   onChange: (value: string) => void;
 }
 
-export function ComboBox({ options, value, onChange }: ComboBoxProps) {
+// Use forwardRef to forward the ref to the underlying DOM element
+export const ComboBox = forwardRef((props: ComboBoxProps, ref: ForwardedRef<HTMLDivElement>) => {
+  const { options = [], value = "", onChange } = props;
   const [open, setOpen] = useState(false);
 
   const handleSelect = (optionValue: string) => {
@@ -37,8 +37,10 @@ export function ComboBox({ options, value, onChange }: ComboBoxProps) {
     setOpen(false);
   };
 
+  const selectedOption = options.find((option) => option.value === value);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} ref={ref}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -46,9 +48,7 @@ export function ComboBox({ options, value, onChange }: ComboBoxProps) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : "Select option..."}
+          {selectedOption ? selectedOption.label : "Select option..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -77,4 +77,4 @@ export function ComboBox({ options, value, onChange }: ComboBoxProps) {
       </PopoverContent>
     </Popover>
   );
-}
+});
