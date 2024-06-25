@@ -1,23 +1,16 @@
 "use client";
-
+import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import axios from "axios";
+import { useForm, SubmitHandler, FormProvider, useFormContext } from "react-hook-form";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ComboBox } from "../../components/custom/ComboBox";
+import { Button } from "../ui/button";
+import { FormField, FormItem, FormLabel } from "../ui/form";
+import { Input } from "../ui/input";
+import { ComboBox } from "../custom/ComboBox";
 
 interface FormData {
   title: string;
@@ -37,11 +30,58 @@ const formSchema = z.object({
   }),
 });
 
+interface CreateCourseFormProps {
+  categories: Array<{ value: string; label: string; subCategories: string[] }>;
+}
+
+const MyForm: React.FC = () => {
+  const { control } = useFormContext();
+
+  return (
+    <>
+      <FormField
+        control={control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Title</FormLabel>
+            <Input
+              placeholder="Ex: Web Development for Beginners"
+              {...field}
+            />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="categoryId"
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Category</FormLabel>
+            <ComboBox options={[]} {...field} /> {/* Provide initial empty options */}
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="subCategoryId"
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Subcategory</FormLabel>
+            <ComboBox options={[]} {...field} /> {/* Provide initial empty options */}
+          </FormItem>
+        )}
+      />
+    </>
+  );
+};
+
 const CreateCourseForm: React.FC<CreateCourseFormProps> = ({ categories }) => {
-  const router = useRouter();
+  const router = useRouter(); // Ensure useRouter() is used inside the component
 
   const {
-    control,
     handleSubmit,
     formState: { isValid, isSubmitting },
   } = useForm<FormData>({
@@ -58,84 +98,43 @@ const CreateCourseForm: React.FC<CreateCourseFormProps> = ({ categories }) => {
       const response = await axios.post("/api/courses", values);
       router.push(`/instructor/courses/${response.data.id}/basic`);
       toast.success("New Course Created");
-    } catch (err) {
-      console.log("Failed to create new course", err);
-      toast.error("Something went wrong!");
+    } catch (err: any) {
+      handleSubmissionError(err);
     }
+  };
+
+  const handleSubmissionError = (error: AxiosError<any>) => {
+    let errorMessage = "Something went wrong!";
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
+    console.error("Failed to create new course", error);
+    toast.error(errorMessage);
   };
 
   return (
     <div className="p-10">
       <h1 className="text-xl font-bold">
-        Let give some basics for your course
+        Let's give some basics for your course
       </h1>
       <p className="text-sm mt-3">
-        It is ok if you cannot think of a good title or correct category now.
+        It's okay if you cannot think of a good title or correct category now.
         You can change them later.
       </p>
-
-      <Form control={control} handleSubmit={handleSubmit(onSubmit)}>
+      <FormProvider {...useForm()}>
+        <MyForm />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 mt-10">
-          <FormField
-            control={control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Ex: Web Development for Beginners"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <ComboBox options={categories} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="subCategoryId"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Subcategory</FormLabel>
-                <FormControl>
-                  <ComboBox
-                    options={
-                      categories.find(
-                        (category) => category.value === control.getValues("categoryId")
-                      )?.subCategories || []
-                    }
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <Button type="submit" disabled={!isValid || isSubmitting}>
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create"}
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Create"
+            )}
           </Button>
         </form>
-      </Form>
+      </FormProvider>
     </div>
   );
 };
 
 export default CreateCourseForm;
-
