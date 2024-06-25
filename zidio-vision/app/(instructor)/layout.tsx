@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import Topbar from "@/components/layout/Topbar";
-import Sidebar from "@/components/layout/Sidebar";
+import Topbar from "../../components/layout/Topbar";
+import Sidebar from "../../components/layout/Sidebar";
 
 const InstructorLayout = ({ children }: { children: React.ReactNode }) => {
   const { userId } = auth();

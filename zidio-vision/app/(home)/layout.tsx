@@ -1,4 +1,4 @@
-import Topbar from "@/components/layout/Topbar";
+import Topbar from "../../components/layout/Topbar";
 
 const HomeLayout = ({ children }: { children: React.ReactNode }) => {
   return (
