@@ -2,14 +2,15 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,9 +18,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ComboBox } from "../../components/custom/ComboBox";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+
+interface FormData {
+  title: string;
+  categoryId: string;
+  subCategoryId: string;
+}
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -33,19 +37,14 @@ const formSchema = z.object({
   }),
 });
 
-interface CreateCourseFormProps {
-  categories: {
-    label: string; // name of category
-    value: string; // categoryId
-    subCategories: { label: string; value: string }[];
-  }[];
-}
-
-const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
+const CreateCourseForm: React.FC<CreateCourseFormProps> = ({ categories }) => {
   const router = useRouter();
 
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -54,10 +53,7 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
     },
   });
 
-  const { isValid, isSubmitting } = form.formState;
-
-  // 2. Define a submit handler.
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit: SubmitHandler<FormData> = async (values) => {
     try {
       const response = await axios.post("/api/courses", values);
       router.push(`/instructor/courses/${response.data.id}/basic`);
@@ -78,13 +74,10 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
         You can change them later.
       </p>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 mt-10"
-        >
+      <Form control={control} handleSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 mt-10">
           <FormField
-            control={form.control}
+            control={control}
             name="title"
             render={({ field }) => (
               <FormItem>
@@ -101,7 +94,7 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
           />
 
           <FormField
-            control={form.control}
+            control={control}
             name="categoryId"
             render={({ field }) => (
               <FormItem className="flex flex-col">
@@ -115,7 +108,7 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
           />
 
           <FormField
-            control={form.control}
+            control={control}
             name="subCategoryId"
             render={({ field }) => (
               <FormItem className="flex flex-col">
@@ -124,8 +117,7 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
                   <ComboBox
                     options={
                       categories.find(
-                        (category) =>
-                          category.value === form.watch("categoryId")
+                        (category) => category.value === control.getValues("categoryId")
                       )?.subCategories || []
                     }
                     {...field}
@@ -137,11 +129,7 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
           />
 
           <Button type="submit" disabled={!isValid || isSubmitting}>
-            {isSubmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Create"
-            )}
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create"}
           </Button>
         </form>
       </Form>
@@ -150,3 +138,4 @@ const CreateCourseForm = ({ categories }: CreateCourseFormProps) => {
 };
 
 export default CreateCourseForm;
+
